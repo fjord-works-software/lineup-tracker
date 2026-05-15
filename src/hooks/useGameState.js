@@ -109,12 +109,27 @@ export function useGameState() {
     })
   }
 
-  function importLineup(lineup) {
-    const id = newId()
-    setState(s => ({
-      ...s,
-      lineups: { ...s.lineups, [id]: { ...lineup, id } },
-    }))
+  function importLineup(lineup, existingId = null) {
+    if (existingId) {
+      setState(s => ({
+        ...s,
+        lineups: {
+          ...s.lineups,
+          [existingId]: {
+            ...s.lineups[existingId],
+            teamName: lineup.teamName,
+            league: lineup.league,
+            players: lineup.players,
+          },
+        },
+      }))
+    } else {
+      const id = newId()
+      setState(s => ({
+        ...s,
+        lineups: { ...s.lineups, [id]: { ...lineup, id, sourceId: lineup.sourceId } },
+      }))
+    }
   }
 
   function nextBatter() {

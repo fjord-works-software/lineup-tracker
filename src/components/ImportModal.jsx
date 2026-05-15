@@ -1,4 +1,4 @@
-export default function ImportModal({ lineup, onConfirm, onCancel }) {
+export default function ImportModal({ lineup, existingLineup, onAdd, onUpdate, onCancel }) {
   const activePlayers = lineup.players.filter(p => p.name.trim() && p.enabled !== false)
 
   return (
@@ -28,12 +28,29 @@ export default function ImportModal({ lineup, onConfirm, onCancel }) {
           >
             Cancel
           </button>
-          <button
-            onClick={onConfirm}
-            className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors"
-          >
-            Add to My Lineups
-          </button>
+          {existingLineup ? (
+            <>
+              <button
+                onClick={onAdd}
+                className="flex-1 py-3 rounded-xl bg-slate-600 hover:bg-slate-500 text-white font-medium transition-colors"
+              >
+                Add as New
+              </button>
+              <button
+                onClick={onUpdate}
+                className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors"
+              >
+                Update Existing
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={onAdd}
+              className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors"
+            >
+              Add to My Lineups
+            </button>
+          )}
         </div>
       </div>
     </div>

@@ -24,8 +24,17 @@ export default function App() {
   const { state, activeLineup } = game
   const [importData, setImportData] = useState(readImportHash)
 
-  function handleImport() {
+  const existingImportMatch = importData?.sourceId
+    ? Object.values(state.lineups).find(l => l.sourceId === importData.sourceId) ?? null
+    : null
+
+  function handleImportAdd() {
     game.importLineup(importData)
+    setImportData(null)
+  }
+
+  function handleImportUpdate() {
+    game.importLineup(importData, existingImportMatch.id)
     setImportData(null)
   }
 
@@ -41,7 +50,9 @@ export default function App() {
         {importData && (
           <ImportModal
             lineup={importData}
-            onConfirm={handleImport}
+            existingLineup={existingImportMatch}
+            onAdd={handleImportAdd}
+            onUpdate={handleImportUpdate}
             onCancel={() => setImportData(null)}
           />
         )}
