@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH', 'BN']
 
-const emptyPlayer = () => ({ name: '', number: '', position: '' })
+const emptyPlayer = () => ({ name: '', number: '', position: '', enabled: true })
 
 export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   const [league, setLeague] = useState(lineup.league)
@@ -11,7 +11,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
     lineup.players.length >= 2 ? lineup.players : [emptyPlayer(), emptyPlayer()]
   )
 
-  function persist(patch) {
+  function save(patch) {
     onSave({ league, teamName, players, ...patch })
   }
 
@@ -27,6 +27,12 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
 
   function updatePlayer(i, field, value) {
     const next = players.map((p, idx) => idx === i ? { ...p, [field]: value } : p)
+    setPlayers(next)
+    onSave({ league, teamName, players: next })
+  }
+
+  function togglePlayer(i) {
+    const next = players.map((p, idx) => idx === i ? { ...p, enabled: !p.enabled } : p)
     setPlayers(next)
     onSave({ league, teamName, players: next })
   }
@@ -63,13 +69,15 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
 
   function handleStart() {
     const validPlayers = players.filter(p => p.name.trim())
-    if (validPlayers.length < 2) return
-    persist({ players: validPlayers })
+    const enabledCount = validPlayers.filter(p => p.enabled !== false).length
+    if (enabledCount < 2) return
+    save({ players: validPlayers })
     onStart()
   }
 
   const validCount = players.filter(p => p.name.trim()).length
-  const canStart = validCount >= 2
+  const enabledCount = players.filter(p => p.name.trim() && p.enabled !== false).length
+  const canStart = enabledCount >= 2
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
@@ -107,43 +115,53 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
 
         <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider px-1">Batting Order</div>
 
-        {players.map((player, i) => (
-          <div key={i} className="bg-slate-800 rounded-xl p-3 border border-slate-700">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-slate-500 font-bold w-6 text-center text-sm">{i + 1}</span>
-              <div className="flex flex-col gap-1">
-                <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none">▲</button>
-                <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none">▼</button>
+        {players.map((player, i) => {
+          const disabled = player.enabled === false
+          return (
+            <div key={i} className={`rounded-xl p-3 border transition-opacity ${disabled ? 'bg-slate-800/50 border-slate-700/50 opacity-50' : 'bg-slate-800 border-slate-700'}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-slate-500 font-bold w-6 text-center text-sm">{i + 1}</span>
+                <div className="flex flex-col gap-1">
+                  <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none">▲</button>
+                  <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none">▼</button>
+                </div>
+                <input
+                  type="text"
+                  placeholder="Player name *"
+                  value={player.name}
+                  onChange={e => updatePlayer(i, 'name', e.target.value)}
+                  className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <button
+                  onClick={() => togglePlayer(i)}
+                  className={`px-1.5 text-base leading-none transition-colors ${disabled ? 'text-slate-600 hover:text-green-400' : 'text-green-500 hover:text-slate-400'}`}
+                  title={disabled ? 'Enable player' : 'Bench player'}
+                >
+                  {disabled ? '○' : '●'}
+                </button>
+                <button onClick={() => removePlayer(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 px-1 text-lg leading-none">✕</button>
               </div>
-              <input
-                type="text"
-                placeholder="Player name *"
-                value={player.name}
-                onChange={e => updatePlayer(i, 'name', e.target.value)}
-                className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-              <button onClick={() => removePlayer(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 px-1 text-lg leading-none">✕</button>
+              <div className="flex gap-2 pl-9">
+                <input
+                  type="text"
+                  placeholder="#"
+                  value={player.number}
+                  onChange={e => updatePlayer(i, 'number', e.target.value)}
+                  maxLength={3}
+                  className="w-16 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                />
+                <select
+                  value={player.position}
+                  onChange={e => updatePlayer(i, 'position', e.target.value)}
+                  className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Position</option>
+                  {POSITIONS.map(pos => <option key={pos} value={pos}>{pos}</option>)}
+                </select>
+              </div>
             </div>
-            <div className="flex gap-2 pl-9">
-              <input
-                type="text"
-                placeholder="#"
-                value={player.number}
-                onChange={e => updatePlayer(i, 'number', e.target.value)}
-                maxLength={3}
-                className="w-16 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
-              />
-              <select
-                value={player.position}
-                onChange={e => updatePlayer(i, 'position', e.target.value)}
-                className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Position</option>
-                {POSITIONS.map(pos => <option key={pos} value={pos}>{pos}</option>)}
-              </select>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <div className="px-4 py-4 space-y-3 border-t border-slate-700 bg-slate-900">
@@ -157,7 +175,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
           disabled={!canStart}
           className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold text-lg transition-colors"
         >
-          {canStart ? `Start Game (${validCount} players)` : 'Add at least 2 players'}
+          {canStart ? `Start Game (${enabledCount} of ${validCount} active)` : 'Need at least 2 active players'}
         </button>
       </div>
     </div>

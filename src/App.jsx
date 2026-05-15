@@ -34,6 +34,7 @@ export default function App() {
       state={state}
       activeLineup={activeLineup}
       nextBatter={game.nextBatter}
+      undoBatter={game.undoBatter}
       addOut={game.addOut}
       removeOut={game.removeOut}
       endInning={game.endInning}

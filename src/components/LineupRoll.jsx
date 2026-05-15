@@ -1,8 +1,8 @@
 import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
 export default function LineupRoll({ lineup, currentBatterIndex }) {
-  const onDeck = onDeckIndex(currentBatterIndex, lineup.length)
-  const inHole = inHoleIndex(currentBatterIndex, lineup.length)
+  const onDeck = onDeckIndex(lineup, currentBatterIndex)
+  const inHole = inHoleIndex(lineup, currentBatterIndex)
 
   return (
     <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
@@ -11,9 +11,11 @@ export default function LineupRoll({ lineup, currentBatterIndex }) {
       </div>
       <div className="divide-y divide-slate-700/50">
         {lineup.map((player, i) => {
-          const isAtBat = i === currentBatterIndex
-          const isOnDeck = i === onDeck
-          const isInHole = i === inHole
+          if (player.enabled === false) return null
+          const disabled = false
+          const isAtBat = !disabled && i === currentBatterIndex
+          const isOnDeck = !disabled && i === onDeck
+          const isInHole = !disabled && i === inHole
 
           let rowClass = 'px-4 py-2.5 flex items-center gap-3 text-sm'
           let nameClass = 'font-medium flex-1'

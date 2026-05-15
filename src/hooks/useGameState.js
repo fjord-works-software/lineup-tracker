@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { onDeckIndex } from '../utils/lineup'
+import { onDeckIndex, nextIndex, prevIndex, firstEnabledIndex } from '../utils/lineup'
 
 const STORAGE_KEY = 'lineup_game_state'
 const STATE_VERSION = 2
@@ -19,7 +19,15 @@ function newId() {
 }
 
 function emptyLineup(id) {
-  return { id, league: '', teamName: '', players: [{name:'',number:'',position:''}, {name:'',number:'',position:''}] }
+  return {
+    id,
+    league: '',
+    teamName: '',
+    players: [
+      { name: '', number: '', position: '', enabled: true },
+      { name: '', number: '', position: '', enabled: true },
+    ],
+  }
 }
 
 function loadState() {
@@ -89,13 +97,29 @@ export function useGameState() {
   }
 
   function startGame() {
-    setState(s => ({ ...s, gamePhase: 'game', currentBatterIndex: 0, outCount: 0, inning: 1 }))
+    setState(s => {
+      const players = s.lineups[s.activeLineupId].players
+      return {
+        ...s,
+        gamePhase: 'game',
+        currentBatterIndex: firstEnabledIndex(players),
+        outCount: 0,
+        inning: 1,
+      }
+    })
   }
 
   function nextBatter() {
     setState(s => {
-      const len = s.lineups[s.activeLineupId].players.length
-      return { ...s, currentBatterIndex: (s.currentBatterIndex + 1) % len }
+      const players = s.lineups[s.activeLineupId].players
+      return { ...s, currentBatterIndex: nextIndex(players, s.currentBatterIndex) }
+    })
+  }
+
+  function undoBatter() {
+    setState(s => {
+      const players = s.lineups[s.activeLineupId].players
+      return { ...s, currentBatterIndex: prevIndex(players, s.currentBatterIndex) }
     })
   }
 
@@ -109,10 +133,10 @@ export function useGameState() {
 
   function endInning() {
     setState(s => {
-      const len = s.lineups[s.activeLineupId].players.length
+      const players = s.lineups[s.activeLineupId].players
       return {
         ...s,
-        currentBatterIndex: onDeckIndex(s.currentBatterIndex, len),
+        currentBatterIndex: onDeckIndex(players, s.currentBatterIndex),
         outCount: 0,
         inning: s.inning + 1,
       }
@@ -140,6 +164,7 @@ export function useGameState() {
     goHome,
     startGame,
     nextBatter,
+    undoBatter,
     addOut,
     removeOut,
     endInning,

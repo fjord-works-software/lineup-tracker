@@ -5,14 +5,14 @@ import LineupRoll from './LineupRoll'
 import ConfirmModal from './ConfirmModal'
 import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
-export default function GameView({ activeLineup, state, nextBatter, addOut, removeOut, endInning, endGame }) {
+export default function GameView({ activeLineup, state, nextBatter, undoBatter, addOut, removeOut, endInning, endGame }) {
   const [showConfirm, setShowConfirm] = useState(false)
   const { currentBatterIndex, outCount, inning } = state
   const players = activeLineup.players
 
   const atBat = players[currentBatterIndex]
-  const onDeck = players[onDeckIndex(currentBatterIndex, players.length)]
-  const inHole = players[inHoleIndex(currentBatterIndex, players.length)]
+  const onDeck = players[onDeckIndex(players, currentBatterIndex)]
+  const inHole = players[inHoleIndex(players, currentBatterIndex)]
 
   const inningEnded = outCount === 3
 
@@ -55,12 +55,21 @@ export default function GameView({ activeLineup, state, nextBatter, addOut, remo
             </button>
           </div>
         ) : (
-          <button
-            onClick={nextBatter}
-            className="w-full py-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl transition-colors"
-          >
-            Next Batter →
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={undoBatter}
+              className="px-5 py-5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xl transition-colors"
+              aria-label="Undo last batter"
+            >
+              ↩
+            </button>
+            <button
+              onClick={nextBatter}
+              className="flex-1 py-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl transition-colors"
+            >
+              Next Batter →
+            </button>
+          </div>
         )}
       </div>
 
