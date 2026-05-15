@@ -4,44 +4,68 @@ const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH
 
 const emptyPlayer = () => ({ name: '', number: '', position: '' })
 
-export default function LineupSetup({ onStart, savedLineup }) {
+export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
+  const [league, setLeague] = useState(lineup.league)
+  const [teamName, setTeamName] = useState(lineup.teamName)
   const [players, setPlayers] = useState(
-    savedLineup?.length >= 2 ? savedLineup : [emptyPlayer(), emptyPlayer()]
+    lineup.players.length >= 2 ? lineup.players : [emptyPlayer(), emptyPlayer()]
   )
 
+  function persist(patch) {
+    onSave({ league, teamName, players, ...patch })
+  }
+
+  function handleLeagueChange(val) {
+    setLeague(val)
+    onSave({ league: val, teamName, players })
+  }
+
+  function handleTeamNameChange(val) {
+    setTeamName(val)
+    onSave({ league, teamName: val, players })
+  }
+
   function updatePlayer(i, field, value) {
-    setPlayers(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p))
+    const next = players.map((p, idx) => idx === i ? { ...p, [field]: value } : p)
+    setPlayers(next)
+    onSave({ league, teamName, players: next })
   }
 
   function addPlayer() {
-    if (players.length < 15) setPlayers(prev => [...prev, emptyPlayer()])
+    if (players.length >= 15) return
+    const next = [...players, emptyPlayer()]
+    setPlayers(next)
+    onSave({ league, teamName, players: next })
   }
 
   function removePlayer(i) {
-    if (players.length > 2) setPlayers(prev => prev.filter((_, idx) => idx !== i))
+    if (players.length <= 2) return
+    const next = players.filter((_, idx) => idx !== i)
+    setPlayers(next)
+    onSave({ league, teamName, players: next })
   }
 
   function moveUp(i) {
     if (i === 0) return
-    setPlayers(prev => {
-      const next = [...prev]
-      ;[next[i - 1], next[i]] = [next[i], next[i - 1]]
-      return next
-    })
+    const next = [...players]
+    ;[next[i - 1], next[i]] = [next[i], next[i - 1]]
+    setPlayers(next)
+    onSave({ league, teamName, players: next })
   }
 
   function moveDown(i) {
     if (i === players.length - 1) return
-    setPlayers(prev => {
-      const next = [...prev]
-      ;[next[i], next[i + 1]] = [next[i + 1], next[i]]
-      return next
-    })
+    const next = [...players]
+    ;[next[i], next[i + 1]] = [next[i + 1], next[i]]
+    setPlayers(next)
+    onSave({ league, teamName, players: next })
   }
 
   function handleStart() {
-    const lineup = players.filter(p => p.name.trim())
-    if (lineup.length >= 2) onStart(lineup)
+    const validPlayers = players.filter(p => p.name.trim())
+    if (validPlayers.length < 2) return
+    persist({ players: validPlayers })
+    onStart()
   }
 
   const validCount = players.filter(p => p.name.trim()).length
@@ -49,27 +73,47 @@ export default function LineupSetup({ onStart, savedLineup }) {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
-      <div className="bg-slate-800 border-b border-slate-700 px-4 py-4">
-        <h1 className="text-2xl font-bold text-center tracking-wide">Lineup Tracker</h1>
-        <p className="text-slate-400 text-sm text-center mt-1">Enter your batting order</p>
+      <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center gap-3">
+        <button onClick={onBack} className="text-slate-400 hover:text-white text-xl leading-none">‹</button>
+        <div className="flex-1">
+          <h1 className="text-lg font-bold leading-tight">{teamName || 'New Lineup'}</h1>
+          {league ? <p className="text-slate-400 text-xs">{league}</p> : null}
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 space-y-3">
+          <div>
+            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1">Team Name</label>
+            <input
+              type="text"
+              placeholder="e.g. Tigers"
+              value={teamName}
+              onChange={e => handleTeamNameChange(e.target.value)}
+              className="w-full bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1">League</label>
+            <input
+              type="text"
+              placeholder="e.g. Westside Little League"
+              value={league}
+              onChange={e => handleLeagueChange(e.target.value)}
+              className="w-full bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider px-1">Batting Order</div>
+
         {players.map((player, i) => (
           <div key={i} className="bg-slate-800 rounded-xl p-3 border border-slate-700">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-slate-500 font-bold w-6 text-center text-sm">{i + 1}</span>
               <div className="flex flex-col gap-1">
-                <button
-                  onClick={() => moveUp(i)}
-                  disabled={i === 0}
-                  className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none"
-                >▲</button>
-                <button
-                  onClick={() => moveDown(i)}
-                  disabled={i === players.length - 1}
-                  className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none"
-                >▼</button>
+                <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none">▲</button>
+                <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-500 hover:text-white disabled:opacity-20 text-xs leading-none">▼</button>
               </div>
               <input
                 type="text"
@@ -78,11 +122,7 @@ export default function LineupSetup({ onStart, savedLineup }) {
                 onChange={e => updatePlayer(i, 'name', e.target.value)}
                 className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-              <button
-                onClick={() => removePlayer(i)}
-                disabled={players.length <= 2}
-                className="text-slate-500 hover:text-red-400 disabled:opacity-20 px-1 text-lg leading-none"
-              >✕</button>
+              <button onClick={() => removePlayer(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 px-1 text-lg leading-none">✕</button>
             </div>
             <div className="flex gap-2 pl-9">
               <input
@@ -99,9 +139,7 @@ export default function LineupSetup({ onStart, savedLineup }) {
                 className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">Position</option>
-                {POSITIONS.map(pos => (
-                  <option key={pos} value={pos}>{pos}</option>
-                ))}
+                {POSITIONS.map(pos => <option key={pos} value={pos}>{pos}</option>)}
               </select>
             </div>
           </div>
@@ -110,10 +148,7 @@ export default function LineupSetup({ onStart, savedLineup }) {
 
       <div className="px-4 py-4 space-y-3 border-t border-slate-700 bg-slate-900">
         {players.length < 15 && (
-          <button
-            onClick={addPlayer}
-            className="w-full py-3 rounded-xl border-2 border-dashed border-slate-600 text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors text-sm font-medium"
-          >
+          <button onClick={addPlayer} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-600 text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors text-sm font-medium">
             + Add Player
           </button>
         )}

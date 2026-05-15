@@ -5,13 +5,14 @@ import LineupRoll from './LineupRoll'
 import ConfirmModal from './ConfirmModal'
 import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
-export default function GameView({ state, nextBatter, addOut, removeOut, endInning, endGame }) {
+export default function GameView({ activeLineup, state, nextBatter, addOut, removeOut, endInning, endGame }) {
   const [showConfirm, setShowConfirm] = useState(false)
-  const { lineup, currentBatterIndex, outCount, inning } = state
+  const { currentBatterIndex, outCount, inning } = state
+  const players = activeLineup.players
 
-  const atBat = lineup[currentBatterIndex]
-  const onDeck = lineup[onDeckIndex(currentBatterIndex, lineup.length)]
-  const inHole = lineup[inHoleIndex(currentBatterIndex, lineup.length)]
+  const atBat = players[currentBatterIndex]
+  const onDeck = players[onDeckIndex(currentBatterIndex, players.length)]
+  const inHole = players[inHoleIndex(currentBatterIndex, players.length)]
 
   const inningEnded = outCount === 3
 
@@ -22,7 +23,10 @@ export default function GameView({ state, nextBatter, addOut, removeOut, endInni
           <div className="text-xs text-slate-400 uppercase tracking-wider">Inning</div>
           <div className="text-2xl font-bold">{inning}</div>
         </div>
-        <h1 className="text-lg font-bold text-slate-300">Lineup Tracker</h1>
+        <div className="text-center">
+          <div className="text-base font-bold text-white leading-tight">{activeLineup.teamName || 'Game'}</div>
+          {activeLineup.league ? <div className="text-xs text-slate-400">{activeLineup.league}</div> : null}
+        </div>
         <button
           onClick={() => setShowConfirm(true)}
           className="text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
@@ -34,7 +38,7 @@ export default function GameView({ state, nextBatter, addOut, removeOut, endInni
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         <BatterSpotlight atBat={atBat} onDeck={onDeck} inHole={inHole} />
         <OutCounter outCount={outCount} onAdd={addOut} onRemove={removeOut} />
-        <LineupRoll lineup={lineup} currentBatterIndex={currentBatterIndex} />
+        <LineupRoll lineup={players} currentBatterIndex={currentBatterIndex} />
       </div>
 
       <div className="px-4 py-4 border-t border-slate-700 bg-slate-900">
