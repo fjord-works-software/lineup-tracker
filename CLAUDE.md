@@ -17,17 +17,35 @@ There are no tests configured. The build output includes a service worker (`dist
 
 This is a single-page React PWA with no routing. All state lives in one hook and is persisted to `localStorage` under the key `lineup_game_state`.
 
-**State flow:**
-- `useGameState` (`src/hooks/useGameState.js`) owns all game state and exposes action functions. Every state change is synced to `localStorage` via a `useEffect`.
-- `App.jsx` reads `state.gamePhase` to switch between the two top-level views: `LineupSetup` (phase `'setup'`) and `GameView` (phase `'game'`).
-- Lineup is locked once the game starts — `startGame(lineup)` is the only way to transition to the game phase.
+**Three-phase flow** — `App.jsx` switches top-level views based on `state.gamePhase`:
+- `'home'` → `HomeScreen`: list of saved lineups, create/delete teams
+- `'setup'` → `LineupSetup`: edit team name, league, and batting order for the active lineup
+- `'game'` → `GameView`: live game tracking
+
+**State shape** (`src/hooks/useGameState.js`):
+```js
+{
+  version: 2,           // bumping resets localStorage to default
+  gamePhase,
+  activeLineupId,       // key into lineups{}
+  lineups: {
+    [id]: { id, league, teamName, players: [{ name, number, position, enabled }] }
+  },
+  currentBatterIndex,   // index into the active lineup's players array
+  outCount,             // 0–3; reaching 3 is a UI gate only, not a state transition
+  inning,
+}
+```
+
+`saveActiveLineup(patch)` is called on every keystroke in `LineupSetup` — the lineup is always up to date in state. `goHome()` deletes the active lineup if it has no team name and no named players (abandoned new lineup cleanup).
 
 **Batting order logic** (`src/utils/lineup.js`):
-- At Bat = `lineup[currentBatterIndex]`
-- On Deck = `lineup[(currentBatterIndex + 1) % length]`
-- In the Hole = `lineup[(currentBatterIndex + 2) % length]`
-- `endInning()` advances `currentBatterIndex` by 1 (on-deck becomes at-bat) and resets `outCount` to 0. The out count reaching 3 is purely a UI gate — it surfaces the "End Inning" button in `GameView` instead of "Next Batter."
+- All five exported functions take `(players, currentIndex)` — the full player array, not just its length. This is required because disabled players (`enabled === false`) are skipped.
+- `onDeckIndex` / `inHoleIndex` walk forward through enabled indices only.
+- `nextIndex` / `prevIndex` are used by `nextBatter` / `undoBatter` in the hook.
+- `firstEnabledIndex` is used by `startGame()` to land on the correct first batter.
+- `currentBatterIndex` always points into the full (unfiltered) players array. `LineupRoll` uses `map` with `return null` for disabled players (not `filter`) to preserve index alignment.
 
-**PWA configuration** (`vite.config.js`): `vite-plugin-pwa` generates a service worker in `generateSW` mode precaching all build assets. Icons live in `public/icons/`.
+**PWA configuration** (`vite.config.js`): `vite-plugin-pwa` in `generateSW` mode precaches all build assets. Icons live in `public/icons/`.
 
-**Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin. The entire CSS entry point is `src/index.css` containing only `@import "tailwindcss"` — there is no `tailwind.config.js`.
+**Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin. `src/index.css` contains only `@import "tailwindcss"` — there is no `tailwind.config.js`.

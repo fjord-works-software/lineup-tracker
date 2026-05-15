@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import ConfirmModal from './ConfirmModal'
 
 const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH', 'BN']
 
 const emptyPlayer = () => ({ name: '', number: '', position: '', enabled: true })
 
 export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
+  const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null)
   const [league, setLeague] = useState(lineup.league)
   const [teamName, setTeamName] = useState(lineup.teamName)
   const [players, setPlayers] = useState(
@@ -139,7 +141,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
                 >
                   {disabled ? '○' : '●'}
                 </button>
-                <button onClick={() => removePlayer(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 px-1 text-lg leading-none">✕</button>
+                <button onClick={() => setConfirmDeleteIndex(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 px-1 text-lg leading-none">✕</button>
               </div>
               <div className="flex gap-2 pl-9">
                 <input
@@ -178,6 +180,15 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
           {canStart ? `Start Game (${enabledCount} of ${validCount} active)` : 'Need at least 2 active players'}
         </button>
       </div>
+
+      {confirmDeleteIndex !== null && (
+        <ConfirmModal
+          message={`Remove ${players[confirmDeleteIndex]?.name || 'this player'} from the lineup?`}
+          confirmLabel="Remove"
+          onConfirm={() => { removePlayer(confirmDeleteIndex); setConfirmDeleteIndex(null) }}
+          onCancel={() => setConfirmDeleteIndex(null)}
+        />
+      )}
     </div>
   )
 }
