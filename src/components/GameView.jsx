@@ -29,7 +29,7 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
         </div>
         <button
           onClick={() => setShowConfirm(true)}
-          className="text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
+          className="text-slate-500 hover:text-red-400 text-sm font-medium transition-colors py-2 px-1 -mr-1"
         >
           End Game
         </button>
@@ -41,7 +41,7 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
         <LineupRoll lineup={players} currentBatterIndex={currentBatterIndex} />
       </div>
 
-      <div className="px-4 py-4 border-t border-slate-700 bg-slate-900">
+      <div className="px-4 pt-4 pb-safe-4 border-t border-slate-700 bg-slate-900">
         {inningEnded ? (
           <div className="space-y-2">
             <div className="text-center text-slate-400 text-sm">

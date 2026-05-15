@@ -26,11 +26,11 @@ export default function LineupRoll({ lineup, currentBatterIndex }) {
             nameClass += ' text-white'
             badge = <span className="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded font-bold">UP</span>
           } else if (isOnDeck) {
-            nameClass += ' text-slate-200'
-            badge = <span className="text-xs bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded">deck</span>
+            nameClass += ' text-green-300'
+            badge = <span className="text-xs bg-green-700 text-green-100 px-1.5 py-0.5 rounded font-bold">deck</span>
           } else if (isInHole) {
-            nameClass += ' text-slate-300'
-            badge = <span className="text-xs bg-slate-700 text-slate-400 px-1.5 py-0.5 rounded">hole</span>
+            nameClass += ' text-amber-300'
+            badge = <span className="text-xs bg-amber-600 text-amber-100 px-1.5 py-0.5 rounded font-bold">hole</span>
           } else {
             nameClass += ' text-slate-400'
           }

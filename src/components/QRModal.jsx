@@ -42,7 +42,7 @@ export default function QRModal({ lineup, shareUrl, onClose }) {
 
         <button
           onClick={onClose}
-          className="text-slate-500 hover:text-white text-sm transition-colors"
+          className="text-slate-500 hover:text-white text-sm transition-colors py-2 px-8"
         >
           Close
         </button>

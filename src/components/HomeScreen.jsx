@@ -66,7 +66,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
         )}
       </div>
 
-      <div className="px-4 py-4 border-t border-slate-700 bg-slate-900">
+      <div className="px-4 pt-4 pb-safe-4 border-t border-slate-700 bg-slate-900">
         <button
           onClick={newLineup}
           className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-lg transition-colors"
