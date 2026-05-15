@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import ConfirmModal from './ConfirmModal'
+import QRModal from './QRModal'
+import { buildShareUrl } from '../utils/share'
 
 export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup }) {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
+  const [sharingLineup, setSharingLineup] = useState(null)
   const lineupList = Object.values(lineups)
 
   return (
@@ -43,8 +46,15 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                     </div>
                   </button>
                   <button
+                    onClick={() => setSharingLineup(lineup)}
+                    className="px-3 py-4 text-slate-500 hover:text-blue-400 transition-colors text-lg"
+                    aria-label="Share lineup"
+                  >
+                    ⤴
+                  </button>
+                  <button
                     onClick={() => setConfirmDeleteId(lineup.id)}
-                    className="px-4 py-4 text-slate-600 hover:text-red-400 transition-colors text-lg"
+                    className="px-3 py-4 text-slate-600 hover:text-red-400 transition-colors text-lg"
                     aria-label="Delete lineup"
                   >
                     🗑
@@ -71,6 +81,14 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           confirmLabel="Delete"
           onConfirm={() => { deleteLineup(confirmDeleteId); setConfirmDeleteId(null) }}
           onCancel={() => setConfirmDeleteId(null)}
+        />
+      )}
+
+      {sharingLineup && (
+        <QRModal
+          lineup={sharingLineup}
+          shareUrl={buildShareUrl(sharingLineup)}
+          onClose={() => setSharingLineup(null)}
         />
       )}
     </div>

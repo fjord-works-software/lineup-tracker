@@ -109,6 +109,14 @@ export function useGameState() {
     })
   }
 
+  function importLineup(lineup) {
+    const id = newId()
+    setState(s => ({
+      ...s,
+      lineups: { ...s.lineups, [id]: { ...lineup, id } },
+    }))
+  }
+
   function nextBatter() {
     setState(s => {
       const players = s.lineups[s.activeLineupId].players
@@ -157,6 +165,7 @@ export function useGameState() {
   return {
     state,
     activeLineup,
+    importLineup,
     newLineup,
     selectLineup,
     deleteLineup,

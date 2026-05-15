@@ -1,20 +1,51 @@
+import { useState } from 'react'
 import { useGameState } from './hooks/useGameState'
 import HomeScreen from './components/HomeScreen'
 import LineupSetup from './components/LineupSetup'
 import GameView from './components/GameView'
+import ImportModal from './components/ImportModal'
+import { decodeLineup } from './utils/share'
+
+function readImportHash() {
+  try {
+    const hash = window.location.hash
+    if (!hash.startsWith('#import=')) return null
+    const lineup = decodeLineup(hash.slice('#import='.length))
+    history.replaceState(null, '', window.location.pathname)
+    return lineup
+  } catch {
+    history.replaceState(null, '', window.location.pathname)
+    return null
+  }
+}
 
 export default function App() {
   const game = useGameState()
   const { state, activeLineup } = game
+  const [importData, setImportData] = useState(readImportHash)
+
+  function handleImport() {
+    game.importLineup(importData)
+    setImportData(null)
+  }
 
   if (state.gamePhase === 'home') {
     return (
-      <HomeScreen
-        lineups={state.lineups}
-        newLineup={game.newLineup}
-        selectLineup={game.selectLineup}
-        deleteLineup={game.deleteLineup}
-      />
+      <>
+        <HomeScreen
+          lineups={state.lineups}
+          newLineup={game.newLineup}
+          selectLineup={game.selectLineup}
+          deleteLineup={game.deleteLineup}
+        />
+        {importData && (
+          <ImportModal
+            lineup={importData}
+            onConfirm={handleImport}
+            onCancel={() => setImportData(null)}
+          />
+        )}
+      </>
     )
   }
 
