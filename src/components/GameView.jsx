@@ -5,7 +5,7 @@ import LineupRoll from './LineupRoll'
 import ConfirmModal from './ConfirmModal'
 import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
-export default function GameView({ state, nextBatter, addOut, removeOut, endInning, resetGame }) {
+export default function GameView({ state, nextBatter, addOut, removeOut, endInning, endGame }) {
   const [showConfirm, setShowConfirm] = useState(false)
   const { lineup, currentBatterIndex, outCount, inning } = state
 
@@ -27,7 +27,7 @@ export default function GameView({ state, nextBatter, addOut, removeOut, endInni
           onClick={() => setShowConfirm(true)}
           className="text-slate-500 hover:text-red-400 text-sm font-medium transition-colors"
         >
-          Reset
+          End Game
         </button>
       </div>
 
@@ -62,8 +62,8 @@ export default function GameView({ state, nextBatter, addOut, removeOut, endInni
 
       {showConfirm && (
         <ConfirmModal
-          message="Reset the game and return to lineup setup?"
-          onConfirm={() => { resetGame(); setShowConfirm(false) }}
+          message="End game? Your lineup will be saved for next time."
+          onConfirm={() => { endGame(); setShowConfirm(false) }}
           onCancel={() => setShowConfirm(false)}
         />
       )}

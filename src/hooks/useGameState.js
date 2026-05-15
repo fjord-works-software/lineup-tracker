@@ -61,9 +61,12 @@ export function useGameState() {
     }))
   }
 
-  function resetGame() {
-    setState(defaultState)
+  function endGame() {
+    setState(s => ({
+      ...defaultState,
+      lineup: s.lineup,
+    }))
   }
 
-  return { state, startGame, nextBatter, addOut, removeOut, endInning, resetGame }
+  return { state, startGame, nextBatter, addOut, removeOut, endInning, endGame }
 }

@@ -4,8 +4,10 @@ const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH
 
 const emptyPlayer = () => ({ name: '', number: '', position: '' })
 
-export default function LineupSetup({ onStart }) {
-  const [players, setPlayers] = useState([emptyPlayer(), emptyPlayer()])
+export default function LineupSetup({ onStart, savedLineup }) {
+  const [players, setPlayers] = useState(
+    savedLineup?.length >= 2 ? savedLineup : [emptyPlayer(), emptyPlayer()]
+  )
 
   function updatePlayer(i, field, value) {
     setPlayers(prev => prev.map((p, idx) => idx === i ? { ...p, [field]: value } : p))

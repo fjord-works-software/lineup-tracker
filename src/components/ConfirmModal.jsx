@@ -14,7 +14,7 @@ export default function ConfirmModal({ message, onConfirm, onCancel }) {
             onClick={onConfirm}
             className="flex-1 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold transition-colors"
           >
-            Reset
+            OK
           </button>
         </div>
       </div>
