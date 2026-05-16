@@ -151,6 +151,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
                   onChange={e => updatePlayer(i, 'number', e.target.value)}
                   maxLength={3}
                   className="w-16 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                  inputMode='numeric'
                 />
                 <select
                   value={player.position}
