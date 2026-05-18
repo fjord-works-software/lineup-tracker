@@ -10,7 +10,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
   const lineupList = Object.values(lineups)
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col">
+    <div className="h-screen bg-slate-900 text-white flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-4">
         <h1 className="text-2xl font-bold text-center tracking-wide">Lineup Tracker</h1>
         <p className="text-slate-400 text-sm text-center mt-1">Select a team to manage</p>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronUp, ChevronDown, Circle, CircleDot, X } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 
@@ -13,6 +13,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   const [players, setPlayers] = useState(
     lineup.players.length >= 2 ? lineup.players : [emptyPlayer(), emptyPlayer()]
   )
+  const scrollRef = useRef(null)
 
   function save(patch) {
     onSave({ league, teamName, players, ...patch })
@@ -45,6 +46,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
     const next = [...players, emptyPlayer()]
     setPlayers(next)
     onSave({ league, teamName, players: next })
+    setTimeout(() => scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' }), 0)
   }
 
   function removePlayer(i) {
@@ -83,7 +85,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   const canStart = enabledCount >= 2
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col">
+    <div className="h-screen bg-slate-900 text-white flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center gap-3">
         <button onClick={onBack} className="text-slate-400 hover:text-white p-2 -ml-2"><ChevronLeft size={22} /></button>
         <div className="flex-1">
@@ -92,7 +94,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 space-y-3">
           <div>
             <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1">Team Name</label>

@@ -18,7 +18,7 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
   const inningEnded = outCount === 3
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white flex flex-col">
+    <div className="h-screen bg-slate-900 text-white flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between">
         <div>
           <div className="text-xs text-slate-400 uppercase tracking-wider">Inning</div>
@@ -36,9 +36,12 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="px-4 pt-4 space-y-4">
         <BatterSpotlight atBat={atBat} onDeck={onDeck} inHole={inHole} />
         <OutCounter outCount={outCount} onAdd={addOut} onRemove={removeOut} />
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 py-4">
         <LineupRoll lineup={players} currentBatterIndex={currentBatterIndex} />
       </div>
 
