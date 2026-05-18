@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Share2, Trash2 } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 import QRModal from './QRModal'
 import { buildShareUrl } from '../utils/share'
@@ -50,14 +51,14 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                     className="px-3 py-4 text-slate-500 hover:text-blue-400 transition-colors text-lg"
                     aria-label="Share lineup"
                   >
-                    ⤴
+                    <Share2 size={18} />
                   </button>
                   <button
                     onClick={() => setConfirmDeleteId(lineup.id)}
                     className="px-3 py-4 text-slate-600 hover:text-red-400 transition-colors text-lg"
                     aria-label="Delete lineup"
                   >
-                    🗑
+                    <Trash2 size={18} />
                   </button>
                 </div>
               )

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ChevronLeft, ChevronUp, ChevronDown, Circle, CircleDot, X } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 
 const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH', 'BN']
@@ -84,7 +85,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   return (
     <div className="min-h-screen bg-slate-900 text-white flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center gap-3">
-        <button onClick={onBack} className="text-slate-400 hover:text-white text-xl p-2 -ml-2">‹</button>
+        <button onClick={onBack} className="text-slate-400 hover:text-white p-2 -ml-2"><ChevronLeft size={22} /></button>
         <div className="flex-1">
           <h1 className="text-lg font-bold leading-tight">{teamName || 'New Lineup'}</h1>
           {league ? <p className="text-slate-400 text-xs">{league}</p> : null}
@@ -124,8 +125,8 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-slate-500 font-bold w-6 text-center text-sm">{i + 1}</span>
                 <div className="flex flex-col">
-                  <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-500 hover:text-white disabled:opacity-20 text-sm py-2.5 px-2">▲</button>
-                  <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-500 hover:text-white disabled:opacity-20 text-sm py-2.5 px-2">▼</button>
+                  <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-500 hover:text-white disabled:opacity-20 py-2.5 px-2"><ChevronUp size={14} /></button>
+                  <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-500 hover:text-white disabled:opacity-20 py-2.5 px-2"><ChevronDown size={14} /></button>
                 </div>
                 <input
                   type="text"
@@ -139,9 +140,9 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
                   className={`p-2.5 text-lg transition-colors ${disabled ? 'text-slate-600 hover:text-green-400' : 'text-green-500 hover:text-slate-400'}`}
                   title={disabled ? 'Enable player' : 'Bench player'}
                 >
-                  {disabled ? '○' : '●'}
+                  {disabled ? <Circle size={18} /> : <CircleDot size={18} />}
                 </button>
-                <button onClick={() => setConfirmDeleteIndex(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 p-2.5 text-lg">✕</button>
+                <button onClick={() => setConfirmDeleteIndex(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 p-2.5"><X size={16} /></button>
               </div>
               <div className="flex gap-2 pl-9">
                 <input

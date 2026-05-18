@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Check } from 'lucide-react'
 import QRCode from 'qrcode'
 
 export default function QRModal({ lineup, shareUrl, onClose }) {
@@ -37,7 +38,7 @@ export default function QRModal({ lineup, shareUrl, onClose }) {
           onClick={copyLink}
           className="w-full py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors text-sm"
         >
-          {copied ? '✓ Link Copied!' : 'Copy Link'}
+          {copied ? <span className="flex items-center justify-center gap-1.5"><Check size={14} /> Link Copied!</span> : 'Copy Link'}
         </button>
 
         <button

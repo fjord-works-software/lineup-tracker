@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ArrowRight, Undo2 } from 'lucide-react'
 import BatterSpotlight from './BatterSpotlight'
 import OutCounter from './OutCounter'
 import LineupRoll from './LineupRoll'
@@ -51,7 +52,7 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
               onClick={endInning}
               className="w-full py-5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold text-xl transition-colors"
             >
-              Start Inning {inning + 1} →
+              <span className="flex items-center justify-center gap-2">Start Inning {inning + 1} <ArrowRight size={20} /></span>
             </button>
           </div>
         ) : (
@@ -61,13 +62,13 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
               className="px-5 py-5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-bold text-xl transition-colors"
               aria-label="Undo last batter"
             >
-              ↩
+              <Undo2 size={22} />
             </button>
             <button
               onClick={nextBatter}
               className="flex-1 py-5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xl transition-colors"
             >
-              Next Batter →
+              <span className="flex items-center justify-center gap-2">Next Batter <ArrowRight size={20} /></span>
             </button>
           </div>
         )}
