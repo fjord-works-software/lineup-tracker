@@ -35,9 +35,13 @@ function loadState() {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return defaultState
     const parsed = JSON.parse(raw)
-    if (parsed.version !== STATE_VERSION) return defaultState
+    if (parsed.version !== STATE_VERSION) {
+      localStorage.removeItem(STORAGE_KEY)
+      return defaultState
+    }
     return parsed
   } catch {
+    localStorage.removeItem(STORAGE_KEY)
     return defaultState
   }
 }
