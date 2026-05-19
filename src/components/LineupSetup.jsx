@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronUp, ChevronDown, Circle, CircleDot, X } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
+import StartGameModal from './StartGameModal'
 
 const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH', 'BN']
 
@@ -8,6 +9,7 @@ const emptyPlayer = () => ({ name: '', number: '', position: '', enabled: true }
 
 export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null)
+  const [showStartConfirm, setShowStartConfirm] = useState(false)
   const [league, setLeague] = useState(lineup.league)
   const [teamName, setTeamName] = useState(lineup.teamName)
   const [players, setPlayers] = useState(
@@ -73,9 +75,12 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   }
 
   function handleStart() {
-    const validPlayers = players.filter(p => p.name.trim())
-    const enabledCount = validPlayers.filter(p => p.enabled !== false).length
     if (enabledCount < 2) return
+    setShowStartConfirm(true)
+  }
+
+  function handleConfirmStart() {
+    const validPlayers = players.filter(p => p.name.trim())
     save({ players: validPlayers })
     onStart()
   }
@@ -191,6 +196,15 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
           confirmLabel="Remove"
           onConfirm={() => { removePlayer(confirmDeleteIndex); setConfirmDeleteIndex(null) }}
           onCancel={() => setConfirmDeleteIndex(null)}
+        />
+      )}
+
+      {showStartConfirm && (
+        <StartGameModal
+          players={players}
+          teamName={teamName}
+          onConfirm={handleConfirmStart}
+          onCancel={() => setShowStartConfirm(false)}
         />
       )}
     </div>
