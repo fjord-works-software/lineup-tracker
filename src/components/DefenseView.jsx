@@ -85,7 +85,7 @@ export default function DefenseView({
           </div>
           <div className="divide-y divide-slate-700/50">
             {activeLineup.players.map((player, i) => {
-              if (player.enabled === false || !player.name.trim()) return null
+              if (player.enabled === false || !player.name.trim() || player.position !== 'P') return null
               const isActive = i === currentPitcherIndex
               const count = pitchCounts[String(i)] ?? 0
               return (
