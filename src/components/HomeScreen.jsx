@@ -4,6 +4,7 @@ import ConfirmModal from './ConfirmModal'
 import QRModal from './QRModal'
 import BackupModal from './BackupModal'
 import LineupCodeModal from './LineupCodeModal'
+import QRScanModal from './QRScanModal'
 import { buildShareUrl, encodeBackup, encodeLineup } from '../utils/share'
 
 export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup, restoreBackup, onImportLineupCode }) {
@@ -11,6 +12,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
   const [sharingLineup, setSharingLineup] = useState(null)
   const [showFullImport, setShowFullImport] = useState(false)
   const [showLineupImport, setShowLineupImport] = useState(false)
+  const [showQRScan, setShowQRScan] = useState(false)
   const [copied, setCopied] = useState(false)
   const [copiedId, setCopiedId] = useState(null)
   const lineupList = Object.values(lineups)
@@ -106,11 +108,19 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
         </button>
         <div className="flex gap-2 mt-2">
           <button
+            onClick={() => setShowQRScan(true)}
+            className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium transition-colors"
+          >
+            Scan QR
+          </button>
+          <button
             onClick={() => setShowLineupImport(true)}
             className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium transition-colors"
           >
             Import Lineup
           </button>
+        </div>
+        <div className="flex gap-2 mt-2">
           <button
             onClick={handleExport}
             disabled={lineupList.length === 0}
@@ -141,6 +151,13 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           lineup={sharingLineup}
           shareUrl={buildShareUrl(sharingLineup)}
           onClose={() => setSharingLineup(null)}
+        />
+      )}
+
+      {showQRScan && (
+        <QRScanModal
+          onImport={decoded => { onImportLineupCode(decoded); setShowQRScan(false) }}
+          onCancel={() => setShowQRScan(false)}
         />
       )}
 
