@@ -8,6 +8,14 @@ function validateString(val, fallback = '') {
   return val
 }
 
+// IDs are generated as Math.random().toString(36).slice(2, 9) — 7 lowercase base-36 chars.
+const ID_RE = /^[0-9a-z]{7}$/
+
+function validateSourceId(val) {
+  if (typeof val !== 'string' || !ID_RE.test(val)) throw new Error('invalid')
+  return val
+}
+
 function validatePlayer(p) {
   if (!p || typeof p !== 'object' || Array.isArray(p)) throw new Error('invalid')
   return {
@@ -33,7 +41,7 @@ export function encodeLineup(lineup) {
 export function decodeLineup(str) {
   const { sourceId, teamName, league, players } = JSON.parse(atob(str))
   return {
-    sourceId: sourceId != null ? validateString(sourceId) : null,
+    sourceId: sourceId != null ? validateSourceId(sourceId) : null,
     teamName: validateString(teamName),
     league: validateString(league),
     players: validatePlayers(players),

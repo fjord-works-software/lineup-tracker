@@ -25,7 +25,9 @@ export default function App() {
   const [importData, setImportData] = useState(readImportHash)
 
   const existingImportMatch = importData?.sourceId
-    ? Object.values(state.lineups).find(l => l.sourceId === importData.sourceId) ?? null
+    ? Object.values(state.lineups).find(
+        l => l.id === importData.sourceId || l.sourceId === importData.sourceId
+      ) ?? null
     : null
 
   function handleImportAdd() {
