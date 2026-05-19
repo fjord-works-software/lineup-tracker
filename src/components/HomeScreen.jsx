@@ -55,6 +55,9 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                           {lineup.league}
                         </span>
                       )}
+                      <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full">
+                        {lineup.pitchType === 'kid' ? 'Kid Pitch' : 'Coach Pitch'}
+                      </span>
                       <span className="text-slate-500 text-xs">
                         {playerCount} {playerCount === 1 ? 'player' : 'players'}
                       </span>
