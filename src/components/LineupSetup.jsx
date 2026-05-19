@@ -12,13 +12,14 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   const [showStartConfirm, setShowStartConfirm] = useState(false)
   const [league, setLeague] = useState(lineup.league)
   const [teamName, setTeamName] = useState(lineup.teamName)
+  const [pitchType, setPitchType] = useState(lineup.pitchType ?? 'coach')
   const [players, setPlayers] = useState(
     lineup.players.length >= 2 ? lineup.players : [emptyPlayer(), emptyPlayer()]
   )
   const scrollRef = useRef(null)
 
   function save(patch) {
-    onSave({ league, teamName, players, ...patch })
+    onSave({ league, teamName, players, pitchType, ...patch })
   }
 
   function handleLeagueChange(val) {
@@ -79,10 +80,10 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
     setShowStartConfirm(true)
   }
 
-  function handleConfirmStart() {
+  function handleConfirmStart(isHome) {
     const validPlayers = players.filter(p => p.name.trim())
     save({ players: validPlayers })
-    onStart()
+    onStart(isHome)
   }
 
   const validCount = players.filter(p => p.name.trim()).length
@@ -120,6 +121,22 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
               onChange={e => handleLeagueChange(e.target.value)}
               className="w-full bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div>
+            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1">Pitch Type</label>
+            <div className="flex rounded-lg overflow-hidden border border-slate-600">
+              {['coach', 'kid'].map(type => (
+                <button
+                  key={type}
+                  onClick={() => { setPitchType(type); save({ pitchType: type }) }}
+                  className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                    pitchType === type ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {type === 'coach' ? 'Coach Pitch' : 'Kid Pitch'}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -203,6 +220,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
         <StartGameModal
           players={players}
           teamName={teamName}
+          pitchType={pitchType}
           onConfirm={handleConfirmStart}
           onCancel={() => setShowStartConfirm(false)}
         />

@@ -23,6 +23,7 @@ function emptyLineup(id) {
     id,
     league: '',
     teamName: '',
+    pitchType: 'coach',
     players: [
       { name: '', number: '', position: '', enabled: true },
       { name: '', number: '', position: '', enabled: true },
@@ -96,15 +97,21 @@ export function useGameState() {
     })
   }
 
-  function startGame() {
+  function startGame(isHome = false) {
     setState(s => {
-      const players = s.lineups[s.activeLineupId].players
+      const lineup = s.lineups[s.activeLineupId]
+      const isKidPitch = lineup.pitchType === 'kid'
+      const home = isHome && isKidPitch
       return {
         ...s,
         gamePhase: 'game',
-        currentBatterIndex: firstEnabledIndex(players),
+        currentBatterIndex: firstEnabledIndex(lineup.players),
         outCount: 0,
         inning: 1,
+        isHome: home,
+        gameView: home ? 'defense' : 'offense',
+        currentPitcherIndex: null,
+        pitchCounts: {},
       }
     })
   }
@@ -161,12 +168,50 @@ export function useGameState() {
   function endInning() {
     setState(s => {
       const players = s.lineups[s.activeLineupId].players
+      const lineup = s.lineups[s.activeLineupId]
+      const isGuestKidPitch = !s.isHome && lineup.pitchType === 'kid'
       return {
         ...s,
         currentBatterIndex: onDeckIndex(players, s.currentBatterIndex),
         outCount: 0,
-        inning: s.inning + 1,
+        // Guest Kid Pitch: switch to defense but hold the inning number — it increments on switchToOffense
+        // Home Kid Pitch: increment inning and switch to defense
+        // Coach Pitch: just increment inning (offense only)
+        ...(isGuestKidPitch
+          ? { gameView: 'defense' }
+          : { inning: s.inning + 1, ...(s.isHome ? { gameView: 'defense' } : {}) }
+        ),
       }
+    })
+  }
+
+  function switchToOffense() {
+    // For Guest teams, the inning increments when switching from defense back to offense
+    setState(s => ({
+      ...s,
+      gameView: 'offense',
+      outCount: 0,
+      ...(!s.isHome ? { inning: s.inning + 1 } : {}),
+    }))
+  }
+
+  function selectPitcher(index) {
+    setState(s => ({ ...s, currentPitcherIndex: index }))
+  }
+
+  function addPitch() {
+    setState(s => {
+      if (s.currentPitcherIndex === null) return s
+      const key = String(s.currentPitcherIndex)
+      return { ...s, pitchCounts: { ...s.pitchCounts, [key]: (s.pitchCounts[key] ?? 0) + 1 } }
+    })
+  }
+
+  function undoPitch() {
+    setState(s => {
+      if (s.currentPitcherIndex === null) return s
+      const key = String(s.currentPitcherIndex)
+      return { ...s, pitchCounts: { ...s.pitchCounts, [key]: Math.max((s.pitchCounts[key] ?? 0) - 1, 0) } }
     })
   }
 
@@ -192,6 +237,10 @@ export function useGameState() {
     saveActiveLineup,
     goHome,
     startGame,
+    switchToOffense,
+    selectPitcher,
+    addPitch,
+    undoPitch,
     nextBatter,
     undoBatter,
     addOut,

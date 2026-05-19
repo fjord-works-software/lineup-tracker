@@ -8,7 +8,7 @@ import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
 export default function GameView({ activeLineup, state, nextBatter, undoBatter, addOut, removeOut, endInning, endGame }) {
   const [showConfirm, setShowConfirm] = useState(false)
-  const { currentBatterIndex, outCount, inning } = state
+  const { currentBatterIndex, outCount, inning, isHome } = state
   const players = activeLineup.players
 
   const atBat = players[currentBatterIndex]
@@ -16,12 +16,13 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
   const inHole = players[inHoleIndex(players, currentBatterIndex)]
 
   const inningEnded = outCount === 3
+  const isGuestKidPitch = !isHome && activeLineup.pitchType === 'kid'
 
   return (
     <div className={`h-screen text-white flex flex-col transition-colors duration-300 ${inningEnded ? 'bg-amber-950' : 'bg-slate-900'}`}>
       <div className={`border-b px-4 py-3 flex items-center justify-between transition-colors duration-300 ${inningEnded ? 'bg-amber-900 border-amber-800' : 'bg-slate-800 border-slate-700'}`}>
         <div>
-          <div className="text-xs text-slate-400 uppercase tracking-wider">Inning</div>
+          <div className="text-xs text-slate-400 uppercase tracking-wider">{isHome ? 'Bottom of' : isGuestKidPitch ? 'Top of' : 'Inning'}</div>
           <div className="text-2xl font-bold">{inning}</div>
         </div>
         <div className="text-center">
@@ -59,7 +60,10 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
             onClick={endInning}
             className="w-full py-5 rounded-xl bg-amber-400 hover:bg-amber-300 text-amber-950 font-bold text-xl transition-colors"
           >
-            <span className="flex items-center justify-center gap-2">Start Inning {inning + 1} <ArrowRight size={20} /></span>
+            <span className="flex items-center justify-center gap-2">
+              {isGuestKidPitch ? 'Start Fielding' : `Start Inning ${inning + 1}`}
+              <ArrowRight size={20} />
+            </span>
           </button>
         ) : (
           <div className="flex gap-3">

@@ -3,6 +3,7 @@ import { useGameState } from './hooks/useGameState'
 import HomeScreen from './components/HomeScreen'
 import LineupSetup from './components/LineupSetup'
 import GameView from './components/GameView'
+import DefenseView from './components/DefenseView'
 import ImportModal from './components/ImportModal'
 import { decodeLineup } from './utils/share'
 
@@ -68,6 +69,22 @@ export default function App() {
         onSave={game.saveActiveLineup}
         onStart={game.startGame}
         onBack={game.goHome}
+      />
+    )
+  }
+
+  if (state.gameView === 'defense') {
+    return (
+      <DefenseView
+        state={state}
+        activeLineup={activeLineup}
+        selectPitcher={game.selectPitcher}
+        addPitch={game.addPitch}
+        undoPitch={game.undoPitch}
+        addOut={game.addOut}
+        removeOut={game.removeOut}
+        switchToOffense={game.switchToOffense}
+        endGame={game.endGame}
       />
     )
   }

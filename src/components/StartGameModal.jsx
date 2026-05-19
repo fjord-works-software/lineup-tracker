@@ -1,4 +1,7 @@
-export default function StartGameModal({ players, teamName, onConfirm, onCancel }) {
+import { useState } from 'react'
+
+export default function StartGameModal({ players, teamName, pitchType, onConfirm, onCancel }) {
+  const [isHome, setIsHome] = useState(false)
   const battingOrder = players.filter(p => p.name.trim() && p.enabled !== false)
 
   return (
@@ -26,6 +29,25 @@ export default function StartGameModal({ players, teamName, onConfirm, onCancel 
           ))}
         </div>
 
+        {pitchType === 'kid' && (
+          <div className="px-6 pb-4">
+            <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider mb-2">Batting order</div>
+            <div className="flex rounded-lg overflow-hidden border border-slate-600">
+              {[{ label: 'Guest (1st)', value: false }, { label: 'Home (2nd)', value: true }].map(opt => (
+                <button
+                  key={String(opt.value)}
+                  onClick={() => setIsHome(opt.value)}
+                  className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                    isHome === opt.value ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="flex gap-3 px-6 py-4 border-t border-slate-700">
           <button
             onClick={onCancel}
@@ -34,7 +56,7 @@ export default function StartGameModal({ players, teamName, onConfirm, onCancel 
             Edit Lineup
           </button>
           <button
-            onClick={onConfirm}
+            onClick={() => onConfirm(pitchType === 'kid' ? isHome : false)}
             className="flex-1 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold transition-colors"
           >
             Start Game
