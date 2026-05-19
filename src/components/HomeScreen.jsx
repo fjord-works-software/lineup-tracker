@@ -1,15 +1,18 @@
 import { useState } from 'react'
-import { Share2, Trash2 } from 'lucide-react'
+import { Share2, Trash2, Copy } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 import QRModal from './QRModal'
 import BackupModal from './BackupModal'
-import { buildShareUrl, encodeBackup } from '../utils/share'
+import LineupCodeModal from './LineupCodeModal'
+import { buildShareUrl, encodeBackup, encodeLineup } from '../utils/share'
 
-export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup, restoreBackup }) {
+export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup, restoreBackup, onImportLineupCode }) {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [sharingLineup, setSharingLineup] = useState(null)
-  const [showImport, setShowImport] = useState(false)
+  const [showFullImport, setShowFullImport] = useState(false)
+  const [showLineupImport, setShowLineupImport] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [copiedId, setCopiedId] = useState(null)
   const lineupList = Object.values(lineups)
 
   async function handleExport() {
@@ -20,7 +23,13 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
 
   function handleRestore(backupLineups) {
     restoreBackup(backupLineups)
-    setShowImport(false)
+    setShowFullImport(false)
+  }
+
+  async function handleCopyLineup(lineup) {
+    await navigator.clipboard.writeText(encodeLineup(lineup))
+    setCopiedId(lineup.id)
+    setTimeout(() => setCopiedId(null), 2000)
   }
 
   return (
@@ -61,6 +70,13 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                     </div>
                   </button>
                   <button
+                    onClick={() => handleCopyLineup(lineup)}
+                    className="px-3 py-4 text-slate-500 hover:text-green-400 transition-colors text-lg"
+                    aria-label="Export lineup code"
+                  >
+                    {copiedId === lineup.id ? <span className="text-green-400 text-xs font-bold">✓</span> : <Copy size={18} />}
+                  </button>
+                  <button
                     onClick={() => setSharingLineup(lineup)}
                     className="px-3 py-4 text-slate-500 hover:text-blue-400 transition-colors text-lg"
                     aria-label="Share lineup"
@@ -90,17 +106,23 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
         </button>
         <div className="flex gap-2 mt-2">
           <button
+            onClick={() => setShowLineupImport(true)}
+            className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium transition-colors"
+          >
+            Import Lineup
+          </button>
+          <button
             onClick={handleExport}
             disabled={lineupList.length === 0}
             className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-slate-300 font-medium transition-colors"
           >
-            {copied ? 'Copied!' : 'Export Backup'}
+            {copied ? 'Copied!' : 'Export Full'}
           </button>
           <button
-            onClick={() => setShowImport(true)}
+            onClick={() => setShowFullImport(true)}
             className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium transition-colors"
           >
-            Import Backup
+            Import Full
           </button>
         </div>
       </div>
@@ -122,10 +144,17 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
         />
       )}
 
-      {showImport && (
+      {showLineupImport && (
+        <LineupCodeModal
+          onImport={decoded => { onImportLineupCode(decoded); setShowLineupImport(false) }}
+          onCancel={() => setShowLineupImport(false)}
+        />
+      )}
+
+      {showFullImport && (
         <BackupModal
           onRestore={handleRestore}
-          onCancel={() => setShowImport(false)}
+          onCancel={() => setShowFullImport(false)}
         />
       )}
     </div>

@@ -49,6 +49,7 @@ export default function App() {
           selectLineup={game.selectLineup}
           deleteLineup={game.deleteLineup}
           restoreBackup={game.restoreBackup}
+          onImportLineupCode={setImportData}
         />
         {importData && (
           <ImportModal
