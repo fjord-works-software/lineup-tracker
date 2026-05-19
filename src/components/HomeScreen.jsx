@@ -2,12 +2,26 @@ import { useState } from 'react'
 import { Share2, Trash2 } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 import QRModal from './QRModal'
-import { buildShareUrl } from '../utils/share'
+import BackupModal from './BackupModal'
+import { buildShareUrl, encodeBackup } from '../utils/share'
 
-export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup }) {
+export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup, restoreBackup }) {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [sharingLineup, setSharingLineup] = useState(null)
+  const [showImport, setShowImport] = useState(false)
+  const [copied, setCopied] = useState(false)
   const lineupList = Object.values(lineups)
+
+  async function handleExport() {
+    await navigator.clipboard.writeText(encodeBackup(lineups))
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  function handleRestore(backupLineups) {
+    restoreBackup(backupLineups)
+    setShowImport(false)
+  }
 
   return (
     <div className="h-screen bg-slate-900 text-white flex flex-col">
@@ -74,6 +88,21 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
         >
           + New Lineup
         </button>
+        <div className="flex gap-2 mt-2">
+          <button
+            onClick={handleExport}
+            disabled={lineupList.length === 0}
+            className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 disabled:opacity-40 text-slate-300 font-medium transition-colors"
+          >
+            {copied ? 'Copied!' : 'Export Backup'}
+          </button>
+          <button
+            onClick={() => setShowImport(true)}
+            className="flex-1 py-2 text-sm rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium transition-colors"
+          >
+            Import Backup
+          </button>
+        </div>
       </div>
 
       {confirmDeleteId && (
@@ -90,6 +119,13 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           lineup={sharingLineup}
           shareUrl={buildShareUrl(sharingLineup)}
           onClose={() => setSharingLineup(null)}
+        />
+      )}
+
+      {showImport && (
+        <BackupModal
+          onRestore={handleRestore}
+          onCancel={() => setShowImport(false)}
         />
       )}
     </div>
