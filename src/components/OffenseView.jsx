@@ -1,13 +1,11 @@
-import { useState } from 'react'
 import { ArrowRight, Undo2 } from 'lucide-react'
 import BatterSpotlight from './BatterSpotlight'
 import OutCounter from './OutCounter'
 import LineupRoll from './LineupRoll'
-import ConfirmModal from './ConfirmModal'
+import GameHeader from './GameHeader'
 import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
-export default function GameView({ activeLineup, state, nextBatter, undoBatter, addOut, removeOut, endInning, endGame }) {
-  const [showConfirm, setShowConfirm] = useState(false)
+export default function OffenseView({ activeLineup, state, nextBatter, undoBatter, addOut, removeOut, endInning, onRequestEndGame }) {
   const { currentBatterIndex, outCount, inning, isHome } = state
   const players = activeLineup.players
 
@@ -17,25 +15,18 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
 
   const inningEnded = outCount === 3
   const isGuestKidPitch = !isHome && activeLineup.pitchType === 'kid'
+  const inningLabel = isHome ? 'Bottom of' : isGuestKidPitch ? 'Top of' : 'Inning'
 
   return (
     <div className={`h-screen text-white flex flex-col transition-colors duration-300 ${inningEnded ? 'bg-amber-950' : 'bg-slate-900'}`}>
-      <div className={`border-b px-4 py-3 flex items-center justify-between transition-colors duration-300 ${inningEnded ? 'bg-amber-900 border-amber-800' : 'bg-slate-800 border-slate-700'}`}>
-        <div>
-          <div className="text-xs text-slate-400 uppercase tracking-wider">{isHome ? 'Bottom of' : isGuestKidPitch ? 'Top of' : 'Inning'}</div>
-          <div className="text-2xl font-bold">{inning}</div>
-        </div>
-        <div className="text-center">
-          <div className="text-base font-bold text-white leading-tight">{activeLineup.teamName || 'Game'}</div>
-          {activeLineup.league ? <div className="text-xs text-slate-400">{activeLineup.league}</div> : null}
-        </div>
-        <button
-          onClick={() => setShowConfirm(true)}
-          className="text-slate-500 hover:text-red-400 text-sm font-medium transition-colors py-2 px-1 -mr-1"
-        >
-          End Game
-        </button>
-      </div>
+      <GameHeader
+        teamName={activeLineup.teamName}
+        league={activeLineup.league}
+        inning={inning}
+        inningLabel={inningLabel}
+        inningEnded={inningEnded}
+        onEndGame={onRequestEndGame}
+      />
 
       {inningEnded ? (
         <div className="px-4 pt-8 pb-4 flex flex-col items-center gap-1 text-center">
@@ -84,13 +75,6 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
         )}
       </div>
 
-      {showConfirm && (
-        <ConfirmModal
-          message="End game? Your lineup will be saved for next time."
-          onConfirm={() => { endGame(); setShowConfirm(false) }}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
     </div>
   )
 }

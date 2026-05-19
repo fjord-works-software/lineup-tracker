@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { useGameState } from './hooks/useGameState'
 import HomeScreen from './components/HomeScreen'
 import LineupSetup from './components/LineupSetup'
-import GameView from './components/GameView'
+import OffenseView from './components/OffenseView'
 import DefenseView from './components/DefenseView'
 import ImportModal from './components/ImportModal'
+import ConfirmModal from './components/ConfirmModal'
 import { decodeLineup } from './utils/share'
 
 function readImportHash() {
@@ -24,6 +25,7 @@ export default function App() {
   const game = useGameState()
   const { state, activeLineup } = game
   const [importData, setImportData] = useState(readImportHash)
+  const [showEndGameConfirm, setShowEndGameConfirm] = useState(false)
 
   const existingImportMatch = importData?.sourceId
     ? Object.values(state.lineups).find(l => l.sourceId === importData.sourceId) ?? null
@@ -73,32 +75,49 @@ export default function App() {
     )
   }
 
+  const endGameConfirm = (
+    showEndGameConfirm
+      ? <ConfirmModal
+          message="End game? Your lineup will be saved for next time."
+          onConfirm={() => { game.endGame(); setShowEndGameConfirm(false) }}
+          onCancel={() => setShowEndGameConfirm(false)}
+        />
+      : null
+  )
+
   if (state.gameView === 'defense') {
     return (
-      <DefenseView
-        state={state}
-        activeLineup={activeLineup}
-        selectPitcher={game.selectPitcher}
-        addPitch={game.addPitch}
-        undoPitch={game.undoPitch}
-        addOut={game.addOut}
-        removeOut={game.removeOut}
-        switchToOffense={game.switchToOffense}
-        endGame={game.endGame}
-      />
+      <>
+        <DefenseView
+          state={state}
+          activeLineup={activeLineup}
+          selectPitcher={game.selectPitcher}
+          addPitch={game.addPitch}
+          undoPitch={game.undoPitch}
+          addOut={game.addOut}
+          removeOut={game.removeOut}
+          switchToOffense={game.switchToOffense}
+          onRequestEndGame={() => setShowEndGameConfirm(true)}
+        />
+        {endGameConfirm}
+      </>
     )
   }
 
   return (
-    <GameView
-      state={state}
-      activeLineup={activeLineup}
-      nextBatter={game.nextBatter}
-      undoBatter={game.undoBatter}
-      addOut={game.addOut}
-      removeOut={game.removeOut}
-      endInning={game.endInning}
-      endGame={game.endGame}
-    />
+    <>
+      <OffenseView
+        state={state}
+        activeLineup={activeLineup}
+        nextBatter={game.nextBatter}
+        undoBatter={game.undoBatter}
+        addOut={game.addOut}
+        removeOut={game.removeOut}
+        endInning={game.endInning}
+        onRequestEndGame={() => setShowEndGameConfirm(true)}
+      />
+      {endGameConfirm}
+    </>
   )
 }
+

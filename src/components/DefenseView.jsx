@@ -1,39 +1,30 @@
-import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import OutCounter from './OutCounter'
-import ConfirmModal from './ConfirmModal'
+import GameHeader from './GameHeader'
 
 export default function DefenseView({
   state, activeLineup,
   selectPitcher, addPitch, undoPitch,
   addOut, removeOut,
-  switchToOffense, endGame,
+  switchToOffense, onRequestEndGame,
 }) {
-  const [showConfirm, setShowConfirm] = useState(false)
   const { outCount, inning, currentPitcherIndex, pitchCounts, isHome } = state
   const pitcher = currentPitcherIndex !== null ? activeLineup.players[currentPitcherIndex] : null
   const currentPitchCount = currentPitcherIndex !== null ? (pitchCounts[String(currentPitcherIndex)] ?? 0) : 0
   const inningEnded = outCount === 3
+  const inningLabel = isHome ? 'Top of' : 'Bottom of'
 
   return (
     <div className={`h-screen text-white flex flex-col transition-colors duration-300 ${inningEnded ? 'bg-amber-950' : 'bg-slate-900'}`}>
-      <div className={`border-b px-4 py-3 flex items-center justify-between transition-colors duration-300 ${inningEnded ? 'bg-amber-900 border-amber-800' : 'bg-slate-800 border-slate-700'}`}>
-        <div>
-          <div className="text-xs text-slate-400 uppercase tracking-wider">{isHome ? 'Top of' : 'Bottom of'}</div>
-          <div className="text-2xl font-bold">{inning}</div>
-        </div>
-        <div className="text-center">
-          <div className="text-base font-bold text-white leading-tight">{activeLineup.teamName || 'Game'}</div>
-          {activeLineup.league ? <div className="text-xs text-slate-400">{activeLineup.league}</div> : null}
-          <div className="text-xs text-slate-500 mt-0.5">Defense</div>
-        </div>
-        <button
-          onClick={() => setShowConfirm(true)}
-          className="text-slate-500 hover:text-red-400 text-sm font-medium transition-colors py-2 px-1 -mr-1"
-        >
-          End Game
-        </button>
-      </div>
+      <GameHeader
+        teamName={activeLineup.teamName}
+        league={activeLineup.league}
+        inning={inning}
+        inningLabel={inningLabel}
+        subtitle="Defense"
+        inningEnded={inningEnded}
+        onEndGame={onRequestEndGame}
+      />
 
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {inningEnded ? (
@@ -125,14 +116,6 @@ export default function DefenseView({
           </button>
         )}
       </div>
-
-      {showConfirm && (
-        <ConfirmModal
-          message="End game? Your lineup will be saved for next time."
-          onConfirm={() => { endGame(); setShowConfirm(false) }}
-          onCancel={() => setShowConfirm(false)}
-        />
-      )}
     </div>
   )
 }

@@ -170,17 +170,22 @@ export function useGameState() {
       const players = s.lineups[s.activeLineupId].players
       const lineup = s.lineups[s.activeLineupId]
       const isGuestKidPitch = !s.isHome && lineup.pitchType === 'kid'
+
+      let extra
+      if (isGuestKidPitch) {
+        // inning increments on switchToOffense instead
+        extra = { gameView: 'defense' }
+      } else if (s.isHome) {
+        extra = { inning: s.inning + 1, gameView: 'defense' }
+      } else {
+        extra = { inning: s.inning + 1 }
+      }
+
       return {
         ...s,
         currentBatterIndex: onDeckIndex(players, s.currentBatterIndex),
         outCount: 0,
-        // Guest Kid Pitch: switch to defense but hold the inning number — it increments on switchToOffense
-        // Home Kid Pitch: increment inning and switch to defense
-        // Coach Pitch: just increment inning (offense only)
-        ...(isGuestKidPitch
-          ? { gameView: 'defense' }
-          : { inning: s.inning + 1, ...(s.isHome ? { gameView: 'defense' } : {}) }
-        ),
+        ...extra,
       }
     })
   }
