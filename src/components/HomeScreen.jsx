@@ -117,14 +117,12 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           <div className="bg-slate-800 rounded-2xl border border-slate-600 w-full max-w-sm p-6 text-center">
             <div className="text-white font-bold text-lg mb-1">Lineup Tracker</div>
             <p className="text-slate-400 text-sm mb-4">Built by Fjord Works Software LLC</p>
-            <a
-              href="https://fjordworkssoftware.com"
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => window.open('https://fjordworkssoftware.com', '_blank', 'noopener,noreferrer')}
               className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
             >
               fjordworkssoftware.com
-            </a>
+            </button>
             <button
               onClick={() => setShowInfo(false)}
               className="block w-full mt-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors"
