@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Share2, Trash2, ScanQrCode } from 'lucide-react'
+import { Share2, Trash2, ScanQrCode, Info } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 import QRModal from './QRModal'
 import QRScanModal from './QRScanModal'
@@ -9,12 +9,19 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [sharingLineup, setSharingLineup] = useState(null)
   const [showQRScan, setShowQRScan] = useState(false)
+  const [showInfo, setShowInfo] = useState(false)
   const lineupList = Object.values(lineups)
 
   return (
     <div className="h-screen bg-slate-900 text-white flex flex-col">
       <div className="bg-slate-800 border-b border-slate-700 px-4 py-4 flex items-center justify-between">
-        <div className="w-10" />
+        <button
+          onClick={() => setShowInfo(true)}
+          className="w-10 flex justify-start text-slate-400 hover:text-white transition-colors"
+          aria-label="About"
+        >
+          <Info size={22} />
+        </button>
         <div className="text-center">
           <h1 className="text-2xl font-bold tracking-wide">Lineup Tracker</h1>
           <p className="text-slate-400 text-sm mt-1">Select a team to manage</p>
@@ -103,6 +110,29 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           shareUrl={buildShareUrl(sharingLineup)}
           onClose={() => setSharingLineup(null)}
         />
+      )}
+
+      {showInfo && (
+        <div className="fixed inset-0 bg-black/70 grid place-items-center z-50 px-6">
+          <div className="bg-slate-800 rounded-2xl border border-slate-600 w-full max-w-sm p-6 text-center">
+            <div className="text-white font-bold text-lg mb-1">Lineup Tracker</div>
+            <p className="text-slate-400 text-sm mb-4">Built by Fjord Works Software LLC</p>
+            <a
+              href="https://fjordworkssoftware.com"
+              target="_blank"
+              rel="noreferrer"
+              className="text-blue-400 hover:text-blue-300 text-sm transition-colors"
+            >
+              fjordworkssoftware.com
+            </a>
+            <button
+              onClick={() => setShowInfo(false)}
+              className="block w-full mt-6 py-3 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-medium transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
 
       {showQRScan && (
