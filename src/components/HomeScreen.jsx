@@ -22,9 +22,12 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
         >
           <Info size={22} />
         </button>
-        <div className="text-center">
-          <h1 className="text-2xl font-bold tracking-wide">Lineup Tracker</h1>
-          <p className="text-slate-400 text-sm mt-1">Select a team to manage</p>
+        <div className="flex items-center gap-3">
+          <span className="text-4xl">⚾</span>
+          <div>
+            <h1 className="text-2xl font-bold tracking-wide">Lineup Tracker</h1>
+            <p className="text-slate-400 text-sm mt-1">Select a team to manage</p>
+          </div>
         </div>
         <button
           onClick={() => setShowQRScan(true)}
