@@ -19,7 +19,7 @@ export default function QRModal({ lineup, shareUrl, onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 px-6">
+    <div className="fixed inset-0 bg-black/70 grid place-items-center z-50 px-6">
       <div className="bg-slate-800 rounded-2xl border border-slate-600 w-full max-w-sm p-6 flex flex-col items-center gap-4">
         <div className="text-center">
           <div className="text-white font-bold text-lg">{lineup.teamName || 'Unnamed Team'}</div>

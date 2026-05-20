@@ -2,8 +2,8 @@ export default function StartGameModal({ players, teamName, onConfirm, onCancel 
   const battingOrder = players.filter(p => p.name.trim() && p.enabled !== false)
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-slate-800 rounded-t-2xl sm:rounded-2xl border border-slate-600 w-full max-w-sm max-h-[80vh] flex flex-col">
+    <div className="fixed inset-0 bg-black/70 grid place-items-center z-50 px-6">
+      <div className="bg-slate-800 rounded-2xl border border-slate-600 w-full max-w-sm max-h-[85vh] flex flex-col">
         <div className="px-6 pt-6 pb-4">
           <h2 className="text-white font-bold text-lg">{teamName || 'Lineup'}</h2>
           <p className="text-slate-400 text-sm mt-0.5">Review batting order before starting</p>
