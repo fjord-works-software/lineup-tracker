@@ -44,7 +44,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   }
 
   function addPlayer() {
-    if (players.length >= 15) return
+    if (players.length >= 25) return
     const next = [...players, emptyPlayer()]
     setPlayers(next)
     onSave({ league, teamName, players: next })
@@ -176,7 +176,7 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
       </div>
 
       <div className="px-4 pt-4 pb-safe-4 space-y-3 border-t border-slate-700 bg-slate-900">
-        {players.length < 15 && (
+        {players.length < 25 && (
           <button onClick={addPlayer} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-600 text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors text-sm font-medium">
             + Add Player
           </button>

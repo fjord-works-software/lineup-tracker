@@ -1,5 +1,5 @@
 const MAX_STRING_LENGTH = 100
-const MAX_PLAYERS = 15
+const MAX_PLAYERS = 25
 
 function validateString(val, fallback = '') {
   if (val === null || val === undefined) return fallback
