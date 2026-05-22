@@ -9,3 +9,8 @@ body {
     padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 }
+
+@keyframes sw-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(500%); }
+}
