@@ -6,6 +6,7 @@ export default function QRScanModal({ onImport, onCancel }) {
   const videoRef = useRef(null)
   const scannerRef = useRef(null)
   const [error, setError] = useState(null)
+  const [mirrored, setMirrored] = useState(false)
 
   useEffect(() => {
     const scanner = new QrScanner(
@@ -26,7 +27,11 @@ export default function QRScanModal({ onImport, onCancel }) {
     )
     scannerRef.current = scanner
 
-    scanner.start().catch(err => {
+    scanner.start().then(() => {
+      const track = videoRef.current?.srcObject?.getVideoTracks()[0]
+      const facingMode = track?.getSettings()?.facingMode
+      setMirrored(facingMode === 'user')
+    }).catch(err => {
       if (err.name === 'NotAllowedError') {
         setError('Camera permission denied. Allow camera access and try again.')
       } else {
@@ -50,7 +55,7 @@ export default function QRScanModal({ onImport, onCancel }) {
       </div>
 
       <div className="flex-1 relative flex items-center justify-center bg-black">
-        <video ref={videoRef} className="w-full h-full object-cover" />
+        <video ref={videoRef} className={`w-full h-full object-cover${mirrored ? ' transform-[scaleX(-1)]' : ''}`} />
         {!error && (
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-64 h-64 border-2 border-white/60 rounded-2xl" />
