@@ -33,13 +33,28 @@ function validatePlayers(players) {
   return players.map(validatePlayer)
 }
 
+function jsonToBase64(obj) {
+  const json = JSON.stringify(obj)
+  const bytes = new TextEncoder().encode(json)
+  let binary = ''
+  for (const b of bytes) binary += String.fromCharCode(b)
+  return btoa(binary)
+}
+
+function base64ToJson(str) {
+  const binary = atob(str)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+  return JSON.parse(new TextDecoder().decode(bytes))
+}
+
 export function encodeLineup(lineup) {
   const { id, teamName, league, players } = lineup
-  return btoa(JSON.stringify({ sourceId: id, teamName, league, players }))
+  return jsonToBase64({ sourceId: id, teamName, league, players })
 }
 
 export function decodeLineup(str) {
-  const { sourceId, teamName, league, players } = JSON.parse(atob(str))
+  const { sourceId, teamName, league, players } = base64ToJson(str)
   return {
     sourceId: sourceId != null ? validateSourceId(sourceId) : null,
     teamName: validateString(teamName),

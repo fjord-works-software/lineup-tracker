@@ -8,8 +8,18 @@ import { buildShareUrl } from '../utils/share'
 export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup, onImportLineupCode }) {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [sharingLineup, setSharingLineup] = useState(null)
+  const [sharingUrl, setSharingUrl] = useState(null)
   const [showQRScan, setShowQRScan] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
+
+  function openShareModal(lineup) {
+    try {
+      setSharingUrl(buildShareUrl(lineup))
+      setSharingLineup(lineup)
+    } catch {
+      alert('Could not generate QR code for this lineup.')
+    }
+  }
   const lineupList = Object.values(lineups)
 
   return (
@@ -69,7 +79,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                     </div>
                   </button>
                   <button
-                    onClick={() => setSharingLineup(lineup)}
+                    onClick={() => openShareModal(lineup)}
                     className="px-3 py-4 text-slate-500 hover:text-blue-400 transition-colors text-lg"
                     aria-label="Share lineup"
                   >
@@ -110,8 +120,8 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
       {sharingLineup && (
         <QRModal
           lineup={sharingLineup}
-          shareUrl={buildShareUrl(sharingLineup)}
-          onClose={() => setSharingLineup(null)}
+          shareUrl={sharingUrl}
+          onClose={() => { setSharingLineup(null); setSharingUrl(null) }}
         />
       )}
 
