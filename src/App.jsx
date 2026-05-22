@@ -34,6 +34,10 @@ export default function App() {
           if (worker.state !== 'installing') setSwInstalling(false)
         })
       })
+      setInterval(() => r.update(), 60_000)
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') r.update()
+      })
     },
   })
   const game = useGameState()

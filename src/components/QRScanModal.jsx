@@ -30,7 +30,7 @@ export default function QRScanModal({ onImport, onCancel }) {
     scanner.start().then(() => {
       const track = videoRef.current?.srcObject?.getVideoTracks()[0]
       const facingMode = track?.getSettings()?.facingMode
-      setMirrored(facingMode === 'user')
+      setMirrored(facingMode !== 'environment')
     }).catch(err => {
       if (err.name === 'NotAllowedError') {
         setError('Camera permission denied. Allow camera access and try again.')
