@@ -12,8 +12,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'prompt',
       manifest: {
-        name: 'Lineup Tracker',
-        short_name: 'Lineup',
+        name: 'Baseball Lineup Tracker',
+        short_name: 'Baseball Lineup',
         theme_color: '#1e3a5f',
         background_color: '#0f172a',
         display: 'standalone',
