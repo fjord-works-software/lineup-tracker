@@ -177,14 +177,14 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
 
       <div className="px-4 pt-4 pb-safe-4 space-y-3 border-t border-slate-200 bg-white">
         {players.length < 25 && (
-          <button onClick={addPlayer} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 hover:border-blue-500 hover:text-blue-600 transition-colors text-sm font-medium">
+          <button onClick={addPlayer} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 hover:border-blue-500 hover:text-blue-600 active:bg-blue-50 transition-colors text-sm font-medium">
             + Add Player
           </button>
         )}
         <button
           onClick={handleStart}
           disabled={!canStart}
-          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 disabled:bg-slate-100 disabled:text-slate-400 text-white font-bold text-lg transition-colors"
+          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] disabled:bg-slate-100 disabled:text-slate-400 disabled:active:scale-100 text-white font-bold text-lg transition"
         >
           {canStart ? `Start Game (${enabledCount} of ${validCount} active)` : 'Need at least 2 active players'}
         </button>

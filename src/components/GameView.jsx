@@ -62,7 +62,7 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
         {inningEnded ? (
           <button
             onClick={endInning}
-            className="w-full py-5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xl transition-colors"
+            className="w-full py-5 rounded-xl bg-amber-600 hover:bg-amber-500 active:bg-amber-700 active:scale-[0.98] text-white font-bold text-xl transition"
           >
             <span className="flex items-center justify-center gap-2">Start Inning {inning + 1} <ArrowRight size={20} /></span>
           </button>
@@ -70,14 +70,14 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
           <div className="flex gap-3">
             <button
               onClick={undoBatter}
-              className="px-5 py-5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xl transition-colors"
+              className="px-5 py-5 rounded-xl bg-slate-200 hover:bg-slate-300 active:bg-slate-400 active:scale-95 text-slate-700 font-bold text-xl transition"
               aria-label="Undo last batter"
             >
               <Undo2 size={22} />
             </button>
             <button
               onClick={nextBatter}
-              className="flex-1 py-5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-bold text-xl transition-colors"
+              className="flex-1 py-5 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] text-white font-bold text-xl transition"
             >
               <span className="flex items-center justify-center gap-2">Next Batter <ArrowRight size={20} /></span>
             </button>

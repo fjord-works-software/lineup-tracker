@@ -32,17 +32,17 @@ export default function LineupRoll({ lineup, currentBatterIndex }) {
             nameClass += ' text-amber-700'
             badge = <span className="text-xs bg-amber-700 text-amber-50 px-1.5 py-0.5 rounded font-bold">hole</span>
           } else {
-            nameClass += ' text-slate-500'
+            nameClass += ' text-slate-600'
           }
 
           return (
             <div key={i} className={rowClass}>
-              <span className="text-slate-400 w-5 text-center text-xs font-mono">{i + 1}</span>
+              <span className="text-slate-500 w-5 text-center text-xs font-mono">{i + 1}</span>
               <span className={nameClass}>{player.name}</span>
               {badge}
               <div className="ml-auto flex items-center gap-3">
-                {player.number && <span className="text-slate-400 text-xs">#{player.number}</span>}
-                {player.position && <span className="text-slate-400 text-xs w-8 text-right">{player.position}</span>}
+                {player.number && <span className="text-slate-500 text-xs">#{player.number}</span>}
+                {player.position && <span className="text-slate-500 text-xs w-8 text-right">{player.position}</span>}
               </div>
             </div>
           )

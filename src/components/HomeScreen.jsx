@@ -62,7 +62,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                 <div key={lineup.id} className="bg-white border border-slate-200 rounded-xl flex items-center">
                   <button
                     onClick={() => selectLineup(lineup.id)}
-                    className="flex-1 px-4 py-4 text-left"
+                    className="flex-1 px-4 py-4 text-left rounded-l-xl active:bg-slate-100 transition-colors"
                   >
                     <div className="font-bold text-slate-900 text-lg leading-tight">
                       {lineup.teamName || <span className="text-slate-400 italic">Unnamed Team</span>}
@@ -80,14 +80,14 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                   </button>
                   <button
                     onClick={() => openShareModal(lineup)}
-                    className="px-3 py-4 text-slate-400 hover:text-blue-600 transition-colors text-lg"
+                    className="px-3 py-4 text-slate-500 hover:text-blue-600 active:text-blue-700 transition-colors text-lg"
                     aria-label="Share lineup"
                   >
                     <Share2 size={18} />
                   </button>
                   <button
                     onClick={() => setConfirmDeleteId(lineup.id)}
-                    className="px-3 py-4 text-slate-400 hover:text-red-500 transition-colors text-lg"
+                    className="px-3 py-4 text-slate-500 hover:text-red-500 active:text-red-600 transition-colors text-lg"
                     aria-label="Delete lineup"
                   >
                     <Trash2 size={18} />
@@ -102,7 +102,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
       <div className="px-4 pt-4 pb-safe-4 border-t border-slate-200 bg-white">
         <button
           onClick={newLineup}
-          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-bold text-lg transition-colors"
+          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] text-white font-bold text-lg transition"
         >
           + New Lineup
         </button>

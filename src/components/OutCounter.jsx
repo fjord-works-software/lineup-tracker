@@ -5,7 +5,7 @@ export default function OutCounter({ outCount, onAdd, onRemove }) {
         <button
           onClick={onRemove}
           disabled={outCount === 0}
-          className="w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 disabled:opacity-30 text-slate-700 font-bold text-lg transition-colors"
+          className="w-11 h-11 rounded-full bg-slate-200 hover:bg-slate-300 active:bg-slate-400 active:scale-95 disabled:opacity-30 disabled:active:scale-100 text-slate-700 font-bold text-xl transition"
         >
           −
         </button>
@@ -15,15 +15,15 @@ export default function OutCounter({ outCount, onAdd, onRemove }) {
             {[0, 1, 2].map(i => (
               <div
                 key={i}
-                className={`w-5 h-5 rounded-full border-2 transition-colors ${
+                className={`w-6 h-6 rounded-full border-2 transition-colors ${
                   i < outCount
-                    ? 'bg-red-500 border-red-400'
-                    : 'bg-transparent border-slate-300'
+                    ? 'bg-red-600 border-red-600'
+                    : 'bg-slate-100 border-slate-400'
                 }`}
               />
             ))}
           </div>
-          <span className="text-slate-600 text-sm font-medium">
+          <span className="text-slate-700 text-base font-semibold">
             {outCount === 1 ? '1 Out' : `${outCount} Outs`}
           </span>
         </div>
@@ -31,7 +31,7 @@ export default function OutCounter({ outCount, onAdd, onRemove }) {
         <button
           onClick={onAdd}
           disabled={outCount === 3}
-          className="w-10 h-10 rounded-full bg-slate-200 hover:bg-slate-300 disabled:opacity-30 text-slate-700 font-bold text-lg transition-colors"
+          className="w-11 h-11 rounded-full bg-slate-200 hover:bg-slate-300 active:bg-slate-400 active:scale-95 disabled:opacity-30 disabled:active:scale-100 text-slate-700 font-bold text-xl transition"
         >
           +
         </button>

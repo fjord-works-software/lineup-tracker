@@ -24,7 +24,7 @@ export default function QRModal({ lineup, shareUrl, onClose }) {
         <div className="text-center">
           <div className="text-blue-700 font-bold text-xl">{lineup.teamName || 'Unnamed Team'}</div>
           {lineup.league && <div className="text-slate-500 text-sm">{lineup.league}</div>}
-          <div className="text-slate-400 text-xs mt-1">Scan to import this lineup</div>
+          <div className="text-slate-500 text-xs mt-1">Scan to import this lineup</div>
         </div>
 
         <div className="bg-white border border-slate-200 rounded-xl p-3 w-full">
@@ -36,7 +36,7 @@ export default function QRModal({ lineup, shareUrl, onClose }) {
 
         <button
           onClick={copyLink}
-          className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors text-sm"
+          className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 active:scale-[0.98] text-slate-700 font-medium transition text-sm"
         >
           {copied ? <span className="flex items-center justify-center gap-1.5"><Check size={14} /> Link Copied!</span> : 'Copy Link'}
         </button>

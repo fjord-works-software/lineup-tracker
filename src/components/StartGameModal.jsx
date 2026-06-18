@@ -29,13 +29,13 @@ export default function StartGameModal({ players, teamName, onConfirm, onCancel 
         <div className="flex gap-3 px-6 py-4 border-t border-slate-200">
           <button
             onClick={onCancel}
-            className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors"
+            className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 active:scale-[0.98] text-slate-700 font-medium transition"
           >
             Edit Lineup
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 py-3 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-bold transition-colors"
+            className="flex-1 py-3 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] text-white font-bold transition"
           >
             Start Game
           </button>

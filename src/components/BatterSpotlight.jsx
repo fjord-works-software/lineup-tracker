@@ -7,13 +7,24 @@ const VARIANTS = {
 function PlayerCard({ label, player, variant = 'ondeck' }) {
   if (!player) return null
   const v = VARIANTS[variant]
+  const isAtBat = variant === 'atbat'
   return (
     <div className={`rounded-xl border ${v.card}`}>
-      <div className={`font-bold uppercase tracking-widest mb-1 ${v.label}`}>{label}</div>
-      <div className={`font-bold leading-tight ${v.name}`}>{player.name}</div>
-      <div className={`mt-1 flex gap-3 ${v.detail} text-sm`}>
-        {player.number && <span>#{player.number}</span>}
-        {player.position && <span>{player.position}</span>}
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <div className={`font-bold uppercase tracking-widest mb-1 ${v.label}`}>{label}</div>
+          <div className={`font-bold leading-tight ${v.name}`}>{player.name}</div>
+          <div className={`mt-1 flex gap-3 ${v.detail} text-sm`}>
+            {!isAtBat && player.number && <span>#{player.number}</span>}
+            {player.position && <span>{player.position}</span>}
+          </div>
+        </div>
+        {isAtBat && player.number && (
+          <div className="shrink-0 flex flex-col items-center justify-center bg-blue-800 rounded-xl px-4 py-2 leading-none">
+            <span className="text-blue-300 text-[10px] font-bold tracking-widest">NO.</span>
+            <span className="text-white text-4xl font-black">{player.number}</span>
+          </div>
+        )}
       </div>
     </div>
   )
