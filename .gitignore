@@ -178,3 +178,7 @@ sketch
 
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
+# graphify knowledge graph output (keep the report, ignore the rest)
+graphify-out/*
+!graphify-out/GRAPH_REPORT.md
+

@@ -29,8 +29,8 @@ This is a single-page React PWA with no routing. All state lives in one hook and
   gamePhase,
   activeLineupId,       // key into lineups{}
   lineups: {
-    [id]: { id, league, teamName, players: [{ name, number, position, enabled }] }
-  },
+    [id]: { id, league, teamName, players: [{ name, number, position, enabled }], sourceId? }
+  },                    // sourceId is set only on imported lineups, used to detect re-imports
   currentBatterIndex,   // index into the active lineup's players array
   outCount,             // 0–3; reaching 3 is a UI gate only, not a state transition
   inning,
@@ -40,12 +40,26 @@ This is a single-page React PWA with no routing. All state lives in one hook and
 `saveActiveLineup(patch)` is called on every keystroke in `LineupSetup` — the lineup is always up to date in state. `goHome()` deletes the active lineup if it has no team name and no named players (abandoned new lineup cleanup).
 
 **Batting order logic** (`src/utils/lineup.js`):
-- All five exported functions take `(players, currentIndex)` — the full player array, not just its length. This is required because disabled players (`enabled === false`) are skipped.
+- The file exports five functions. The four navigation helpers (`nextIndex`, `prevIndex`, `onDeckIndex`, `inHoleIndex`) take `(players, currentIndex)` — the full player array, not just its length — because disabled players (`enabled === false`) are skipped. `firstEnabledIndex` takes just `(players)`. `enabledIndices` and `step` are internal (not exported).
 - `onDeckIndex` / `inHoleIndex` walk forward through enabled indices only.
 - `nextIndex` / `prevIndex` are used by `nextBatter` / `undoBatter` in the hook.
 - `firstEnabledIndex` is used by `startGame()` to land on the correct first batter.
 - `currentBatterIndex` always points into the full (unfiltered) players array. `LineupRoll` uses `map` with `return null` for disabled players (not `filter`) to preserve index alignment.
 
-**PWA configuration** (`vite.config.js`): `vite-plugin-pwa` in `generateSW` mode precaches all build assets. Icons live in `public/icons/`.
+**Lineup sharing & import** (`src/utils/share.js`): a lineup is serialized to a base64 JSON string and shared from `HomeScreen` two ways — a `#import=<code>` URL (`buildShareUrl`, displayed as a QR code by `QRModal`) and a camera scan (`QRScanModal`). On load, `App.jsx`'s `readImportHash()` decodes any `#import=` hash, strips it from the URL, and opens `ImportModal`; when the incoming `sourceId` matches an existing lineup the modal offers update-in-place vs. add-new (the hook's `importLineup` action). `decodeLineup` validates every field — string length, player count, base-36 id format — before trusting external input.
 
-**Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin. `src/index.css` contains only `@import "tailwindcss"` — there is no `tailwind.config.js`.
+Note: `BackupModal.jsx`, `LineupCodeModal.jsx`, and the hook's `restoreBackup` action (plus `encodeBackup`/`decodeBackup` in share.js) exist but are **not currently wired into any rendered view** — they are dead code, not part of the live flow.
+
+**PWA configuration** (`vite.config.js`): `vite-plugin-pwa` (default `generateSW` strategy) precaches all build assets via the workbox `globPatterns`. `registerType` is `'prompt'`, so `App.jsx` uses `useRegisterSW` to render an "Update ready / Reload" banner and polls `r.update()` every 60s and on tab focus. The manifest base/`start_url`/`scope` derive from the `VITE_BASE` env var (set during the GitHub Pages build). Icons live in `public/icons/`.
+
+**Styling**: Tailwind CSS v4 via `@tailwindcss/vite` plugin — there is no `tailwind.config.js`. `src/index.css` holds the `@import "tailwindcss"` plus a few globals: `overscroll-behavior: none`, a `.pb-safe-4` safe-area-inset utility, and the `sw-indeterminate` keyframes used by the update banner. (`src/App.css` exists from the Vite template but is not imported.)
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
