@@ -113,10 +113,6 @@ export function useGameState() {
     })
   }
 
-  function restoreBackup(backupLineups) {
-    setState(s => ({ ...s, lineups: { ...s.lineups, ...backupLineups } }))
-  }
-
   function importLineup(lineup, existingId = null) {
     if (existingId) {
       setState(s => ({
@@ -189,7 +185,6 @@ export function useGameState() {
     state,
     activeLineup,
     importLineup,
-    restoreBackup,
     newLineup,
     selectLineup,
     deleteLineup,

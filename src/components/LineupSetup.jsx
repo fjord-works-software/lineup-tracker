@@ -90,66 +90,66 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   const canStart = enabledCount >= 2
 
   return (
-    <div className="h-screen bg-slate-900 text-white flex flex-col">
-      <div className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center gap-3">
-        <button onClick={onBack} className="text-slate-400 hover:text-white p-2 -ml-2"><ChevronLeft size={22} /></button>
+    <div className="h-screen bg-slate-50 flex flex-col">
+      <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center gap-3">
+        <button onClick={onBack} className="text-slate-300 hover:text-white p-2 -ml-2"><ChevronLeft size={22} /></button>
         <div className="flex-1">
-          <h1 className="text-lg font-bold leading-tight">{teamName || 'New Lineup'}</h1>
-          {league ? <p className="text-slate-400 text-xs">{league}</p> : null}
+          <h1 className="text-lg font-bold leading-tight text-white">{teamName || 'New Lineup'}</h1>
+          {league ? <p className="text-slate-300 text-xs">{league}</p> : null}
         </div>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
-        <div className="bg-slate-800 rounded-xl border border-slate-700 p-4 space-y-3">
+        <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
           <div>
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1">Team Name</label>
+            <label className="text-slate-500 text-xs font-semibold uppercase tracking-wider block mb-1">Team Name</label>
             <input
               type="text"
               placeholder="e.g. Tigers"
               value={teamName}
               onChange={e => handleTeamNameChange(e.target.value)}
-              className="w-full bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider block mb-1">League</label>
+            <label className="text-slate-500 text-xs font-semibold uppercase tracking-wider block mb-1">League</label>
             <input
               type="text"
               placeholder="e.g. Westside Little League"
               value={league}
               onChange={e => handleLeagueChange(e.target.value)}
-              className="w-full bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
-        <div className="text-slate-400 text-xs font-semibold uppercase tracking-wider px-1">Batting Order</div>
+        <div className="text-slate-500 text-xs font-semibold uppercase tracking-wider px-1">Batting Order</div>
 
         {players.map((player, i) => {
           const disabled = player.enabled === false
           return (
-            <div key={i} className={`rounded-xl p-3 border transition-opacity ${disabled ? 'bg-slate-800/50 border-slate-700/50 opacity-50' : 'bg-slate-800 border-slate-700'}`}>
+            <div key={i} className={`rounded-xl p-3 border transition-opacity ${disabled ? 'bg-slate-50 border-slate-100 opacity-50' : 'bg-white border-slate-200'}`}>
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-slate-500 font-bold w-6 text-center text-sm">{i + 1}</span>
+                <span className="text-slate-400 font-bold w-6 text-center text-sm">{i + 1}</span>
                 <div className="flex flex-col">
-                  <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-500 hover:text-white disabled:opacity-20 py-2.5 px-2"><ChevronUp size={14} /></button>
-                  <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-500 hover:text-white disabled:opacity-20 py-2.5 px-2"><ChevronDown size={14} /></button>
+                  <button onClick={() => moveUp(i)} disabled={i === 0} className="text-slate-400 hover:text-slate-700 disabled:opacity-20 py-2.5 px-2"><ChevronUp size={14} /></button>
+                  <button onClick={() => moveDown(i)} disabled={i === players.length - 1} className="text-slate-400 hover:text-slate-700 disabled:opacity-20 py-2.5 px-2"><ChevronDown size={14} /></button>
                 </div>
                 <input
                   type="text"
                   placeholder="Player name *"
                   value={player.name}
                   onChange={e => updatePlayer(i, 'name', e.target.value)}
-                  className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
                   onClick={() => togglePlayer(i)}
-                  className={`p-2.5 text-lg transition-colors ${disabled ? 'text-slate-600 hover:text-green-400' : 'text-green-500 hover:text-slate-400'}`}
+                  className={`p-2.5 text-lg transition-colors ${disabled ? 'text-slate-400 hover:text-green-600' : 'text-green-600 hover:text-slate-400'}`}
                   title={disabled ? 'Enable player' : 'Bench player'}
                 >
                   {disabled ? <Circle size={18} /> : <CircleDot size={18} />}
                 </button>
-                <button onClick={() => setConfirmDeleteIndex(i)} disabled={players.length <= 2} className="text-slate-500 hover:text-red-400 disabled:opacity-20 p-2.5"><X size={16} /></button>
+                <button onClick={() => setConfirmDeleteIndex(i)} disabled={players.length <= 2} className="text-slate-400 hover:text-red-500 disabled:opacity-20 p-2.5"><X size={16} /></button>
               </div>
               <div className="flex gap-2 pl-9">
                 <input
@@ -158,13 +158,13 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
                   value={player.number}
                   onChange={e => updatePlayer(i, 'number', e.target.value)}
                   maxLength={3}
-                  className="w-16 bg-slate-700 rounded-lg px-3 py-2 text-sm placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+                  className="w-16 bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
                   inputMode='numeric'
                 />
                 <select
                   value={player.position}
                   onChange={e => updatePlayer(i, 'position', e.target.value)}
-                  className="flex-1 bg-slate-700 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex-1 bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Position</option>
                   {POSITIONS.map(pos => <option key={pos} value={pos}>{pos}</option>)}
@@ -175,16 +175,16 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
         })}
       </div>
 
-      <div className="px-4 pt-4 pb-safe-4 space-y-3 border-t border-slate-700 bg-slate-900">
+      <div className="px-4 pt-4 pb-safe-4 space-y-3 border-t border-slate-200 bg-white">
         {players.length < 25 && (
-          <button onClick={addPlayer} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-600 text-slate-400 hover:border-blue-500 hover:text-blue-400 transition-colors text-sm font-medium">
+          <button onClick={addPlayer} className="w-full py-3 rounded-xl border-2 border-dashed border-slate-300 text-slate-500 hover:border-blue-500 hover:text-blue-600 transition-colors text-sm font-medium">
             + Add Player
           </button>
         )}
         <button
           onClick={handleStart}
           disabled={!canStart}
-          className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:bg-slate-700 disabled:text-slate-500 text-white font-bold text-lg transition-colors"
+          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 disabled:bg-slate-100 disabled:text-slate-400 text-white font-bold text-lg transition-colors"
         >
           {canStart ? `Start Game (${enabledCount} of ${validCount} active)` : 'Need at least 2 active players'}
         </button>

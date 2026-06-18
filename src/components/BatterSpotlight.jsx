@@ -1,7 +1,7 @@
 const VARIANTS = {
-  atbat:  { card: 'bg-blue-600 border-blue-400 p-5',    label: 'text-blue-200 text-xs',  name: 'text-white text-3xl',  detail: 'text-blue-200' },
+  atbat:  { card: 'bg-blue-700 border-blue-500 p-5',    label: 'text-blue-200 text-xs',  name: 'text-white text-3xl',  detail: 'text-blue-200' },
   ondeck: { card: 'bg-green-700 border-green-500 p-3',  label: 'text-green-300 text-xs', name: 'text-white text-xl',   detail: 'text-green-300' },
-  inhole: { card: 'bg-amber-600 border-amber-400 p-3',  label: 'text-amber-200 text-xs', name: 'text-white text-xl',   detail: 'text-amber-200' },
+  inhole: { card: 'bg-amber-700 border-amber-500 p-3',  label: 'text-amber-200 text-xs', name: 'text-white text-xl',   detail: 'text-amber-200' },
 }
 
 function PlayerCard({ label, player, variant = 'ondeck' }) {
