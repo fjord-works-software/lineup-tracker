@@ -16,6 +16,13 @@ function validateSourceId(val) {
   return val
 }
 
+function validateRunRule(val) {
+  // 0 means "no run rule", same as blank.
+  if (val === null || val === undefined || val === 0) return null
+  if (!Number.isInteger(val) || val < 1 || val > 99) throw new Error('invalid')
+  return val
+}
+
 function validatePlayer(p) {
   if (!p || typeof p !== 'object' || Array.isArray(p)) throw new Error('invalid')
   return {
@@ -49,16 +56,18 @@ function base64ToJson(str) {
 }
 
 export function encodeLineup(lineup) {
-  const { id, teamName, league, players } = lineup
-  return jsonToBase64({ sourceId: id, teamName, league, players })
+  const { id, teamName, league, runRule, players } = lineup
+  // A missing run rule becomes undefined, which JSON.stringify drops to keep the QR payload small.
+  return jsonToBase64({ sourceId: id, teamName, league, runRule: runRule || undefined, players })
 }
 
 export function decodeLineup(str) {
-  const { sourceId, teamName, league, players } = base64ToJson(str)
+  const { sourceId, teamName, league, runRule, players } = base64ToJson(str)
   return {
     sourceId: sourceId != null ? validateSourceId(sourceId) : null,
     teamName: validateString(teamName),
     league: validateString(league),
+    runRule: validateRunRule(runRule),
     players: validatePlayers(players),
   }
 }

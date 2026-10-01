@@ -1,25 +1,20 @@
 import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronUp, ChevronDown, Circle, CircleDot, X } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
-import StartGameModal from './StartGameModal'
 
 const POSITIONS = ['P', 'C', '1B', '2B', '3B', 'SS', 'LF', 'CF', 'RF', 'DH', 'EH', 'BN']
 
 const emptyPlayer = () => ({ name: '', number: '', position: '', enabled: true })
 
-export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
+export default function LineupSetup({ lineup, onSave, onBack }) {
   const [confirmDeleteIndex, setConfirmDeleteIndex] = useState(null)
-  const [showStartConfirm, setShowStartConfirm] = useState(false)
   const [league, setLeague] = useState(lineup.league)
   const [teamName, setTeamName] = useState(lineup.teamName)
+  const [runRule, setRunRule] = useState(lineup.runRule ? String(lineup.runRule) : '')
   const [players, setPlayers] = useState(
     lineup.players.length >= 2 ? lineup.players : [emptyPlayer(), emptyPlayer()]
   )
   const scrollRef = useRef(null)
-
-  function save(patch) {
-    onSave({ league, teamName, players, ...patch })
-  }
 
   function handleLeagueChange(val) {
     setLeague(val)
@@ -29,6 +24,12 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
   function handleTeamNameChange(val) {
     setTeamName(val)
     onSave({ league, teamName: val, players })
+  }
+
+  function handleRunRuleChange(val) {
+    const digits = val.replace(/\D/g, '').replace(/^0+/, '')
+    setRunRule(digits)
+    onSave({ runRule: digits ? Number(digits) : null })
   }
 
   function updatePlayer(i, field, value) {
@@ -74,21 +75,6 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
     onSave({ league, teamName, players: next })
   }
 
-  function handleStart() {
-    if (enabledCount < 2) return
-    setShowStartConfirm(true)
-  }
-
-  function handleConfirmStart() {
-    const validPlayers = players.filter(p => p.name.trim())
-    save({ players: validPlayers })
-    onStart()
-  }
-
-  const validCount = players.filter(p => p.name.trim()).length
-  const enabledCount = players.filter(p => p.name.trim() && p.enabled !== false).length
-  const canStart = enabledCount >= 2
-
   return (
     <div className="h-screen bg-slate-50 flex flex-col">
       <div className="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center gap-3">
@@ -120,6 +106,22 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
               onChange={e => handleLeagueChange(e.target.value)}
               className="w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+          </div>
+          <div>
+            <label htmlFor="run-rule" className="text-slate-500 text-xs font-semibold uppercase tracking-wider block mb-1">Run Rule</label>
+            <div className="flex items-center gap-3">
+              <input
+                id="run-rule"
+                type="text"
+                inputMode="numeric"
+                placeholder="None"
+                value={runRule}
+                onChange={e => handleRunRuleChange(e.target.value)}
+                maxLength={2}
+                className="w-20 bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-center"
+              />
+              <span className="text-slate-500 text-sm">runs per inning. Leave blank for none.</span>
+            </div>
           </div>
         </div>
 
@@ -182,11 +184,10 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
           </button>
         )}
         <button
-          onClick={handleStart}
-          disabled={!canStart}
-          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] disabled:bg-slate-100 disabled:text-slate-400 disabled:active:scale-100 text-white font-bold text-lg transition"
+          onClick={onBack}
+          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] text-white font-bold text-lg transition"
         >
-          {canStart ? `Start Game (${enabledCount} of ${validCount} active)` : 'Need at least 2 active players'}
+          Save
         </button>
       </div>
 
@@ -196,15 +197,6 @@ export default function LineupSetup({ lineup, onSave, onStart, onBack }) {
           confirmLabel="Remove"
           onConfirm={() => { removePlayer(confirmDeleteIndex); setConfirmDeleteIndex(null) }}
           onCancel={() => setConfirmDeleteIndex(null)}
-        />
-      )}
-
-      {showStartConfirm && (
-        <StartGameModal
-          players={players}
-          teamName={teamName}
-          onConfirm={handleConfirmStart}
-          onCancel={() => setShowStartConfirm(false)}
         />
       )}
     </div>

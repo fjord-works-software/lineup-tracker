@@ -1,16 +1,16 @@
-# Graph Report - lineup-tracker  (2026-06-17)
+# Graph Report - lineup-tracker  (2026-09-30)
 
 ## Corpus Check
-- 24 files · ~14,194 words
+- 26 files · ~14,986 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 179 nodes · 244 edges · 18 communities (14 shown, 4 thin omitted)
-- Extraction: 85% EXTRACTED · 15% INFERRED · 0% AMBIGUOUS · INFERRED: 37 edges (avg confidence: 0.79)
+- 207 nodes · 273 edges · 19 communities (14 shown, 5 thin omitted)
+- Extraction: 87% EXTRACTED · 13% INFERRED · 0% AMBIGUOUS · INFERRED: 35 edges (avg confidence: 0.79)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `df6b4825`
+- Built from commit: `82db0140`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -22,8 +22,6 @@
 - [[_COMMUNITY_Sharing Codec & Validation|Sharing Codec & Validation]]
 - [[_COMMUNITY_Hero Image Branding|Hero Image Branding]]
 - [[_COMMUNITY_PWA App Shell|PWA App Shell]]
-- [[_COMMUNITY_Game Start Flow|Game Start Flow]]
-- [[_COMMUNITY_QR Code Generation|QR Code Generation]]
 - [[_COMMUNITY_ESLint Config|ESLint Config]]
 - [[_COMMUNITY_PWA App Icons|PWA App Icons]]
 - [[_COMMUNITY_Community 13|Community 13]]
@@ -31,18 +29,21 @@
 - [[_COMMUNITY_Community 15|Community 15]]
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `GameView()` - 12 edges
-2. `onDeckIndex()` - 11 edges
-3. `decodeLineup()` - 11 edges
-4. `useGameState()` - 10 edges
-5. `Lineup Sharing Feature` - 9 edges
-6. `App Component` - 8 edges
-7. `inHoleIndex()` - 7 edges
-8. `step()` - 6 edges
-9. `Baseball Lineup Tracker` - 6 edges
-10. `Lineup Tracker Hero Image` - 6 edges
+1. `decodeLineup()` - 12 edges
+2. `GameView()` - 12 edges
+3. `Matchup Mode: Lineup Swap & Pitch Count` - 12 edges
+4. `onDeckIndex()` - 11 edges
+5. `useGameState()` - 10 edges
+6. `Lineup Sharing Feature` - 9 edges
+7. `App Component` - 8 edges
+8. `inHoleIndex()` - 7 edges
+9. `step()` - 6 edges
+10. `Baseball Lineup Tracker` - 6 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `QRModal()` --semantically_similar_to--> `qr-scanner dependency`  [INFERRED] [semantically similar]
@@ -69,27 +70,27 @@
 - **Lineup Sharing and Import Flow** — share_plan_encode_decode_lineup, share_plan_hash_detection_on_mount, share_plan_import_modal, share_plan_import_lineup_action [EXTRACTED 1.00]
 - **GitHub Pages CI/CD Deployment** — workflows_deploy_github_pages_deploy, workflows_deploy_build_job, workflows_deploy_deploy_job, workflows_deploy_vite_base_env [EXTRACTED 1.00]
 
-## Communities (18 total, 4 thin omitted)
+## Communities (19 total, 5 thin omitted)
 
 ### Community 0 - "Build & Dependency Config"
-Cohesion: 0.12
-Nodes (15): dependencies, lucide-react, qr-scanner, qrcode, react, react-dom, name, private (+7 more)
+Cohesion: 0.07
+Nodes (29): dependencies, lucide-react, qr-scanner, qrcode, react, react-dom, devDependencies, eslint (+21 more)
 
 ### Community 1 - "App Shell & Lineup Setup"
-Cohesion: 0.13
-Nodes (17): App Component, handleImportAdd, handleImportUpdate, ConfirmModal(), ImportModal(), emptyPlayer(), LineupSetup(), POSITIONS (+9 more)
+Cohesion: 0.18
+Nodes (13): App Component, handleImportAdd, handleImportUpdate, readImportHash, ImportModal(), emptyPlayer(), LineupSetup(), POSITIONS (+5 more)
 
 ### Community 2 - "Docs, Sharing & Deploy"
 Cohesion: 0.11
 Nodes (23): Batting Order Logic (disabled-player skipping), localStorage State Persistence, CLAUDE.md Project Guidance, PWA Configuration (vite-plugin-pwa), Tailwind CSS v4 Styling, Three-Phase Game Flow, App Favicon / Logo (purple lightning bolt), Social Icon SVG Sprite Sheet (+15 more)
 
 ### Community 3 - "Live Game & Batting Order"
-Cohesion: 0.16
-Nodes (20): BatterSpotlight(), PlayerCard(), VARIANTS, GameView(), LineupRoll(), OutCounter(), defaultState, emptyLineup() (+12 more)
+Cohesion: 0.15
+Nodes (18): BatterSpotlight(), PlayerCard(), VARIANTS, ConfirmModal(), GameView(), LineupRoll(), OutCounter(), endInning (+10 more)
 
 ### Community 4 - "Sharing Codec & Validation"
-Cohesion: 0.21
-Nodes (15): readImportHash, HomeScreen(), QRScanModal(), readImportHash(), base64ToJson(), buildShareUrl(), decodeBackup(), decodeLineup() (+7 more)
+Cohesion: 0.15
+Nodes (18): HomeScreen(), QRModal(), QRScanModal(), importLineup, qr-scanner dependency, qrcode dependency, base64ToJson(), buildShareUrl() (+10 more)
 
 ### Community 5 - "Hero Image Branding"
 Cohesion: 0.32
@@ -98,14 +99,6 @@ Nodes (8): Rounded Card UI Metaphor, Floating Layered Card Motif, Lineup Tracker
 ### Community 6 - "PWA App Shell"
 Cohesion: 0.25
 Nodes (8): Content Security Policy, index.html App Shell, main.jsx entry, tailwindcss dependency, vite-plugin-pwa dependency, PWA Web App Manifest, VITE_BASE env base path, VitePWA PWA Configuration
-
-### Community 7 - "Game Start Flow"
-Cohesion: 0.14
-Nodes (14): devDependencies, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals, sharp, tailwindcss (+6 more)
-
-### Community 8 - "QR Code Generation"
-Cohesion: 0.40
-Nodes (4): QRModal(), importLineup, qr-scanner dependency, qrcode dependency
 
 ### Community 13 - "Community 13"
 Cohesion: 0.14
@@ -119,25 +112,33 @@ Nodes (6): Baseball Lineup Tracker, Deployment, Development, Features, Project l
 Cohesion: 0.40
 Nodes (3): Architecture, Commands, graphify
 
+### Community 18 - "Community 18"
+Cohesion: 0.11
+Nodes (17): Component details, Context, Data model, Domain concepts, Files to create, Files to modify, `GameView.jsx`, Hook actions (`useGameState`) (+9 more)
+
+### Community 19 - "Community 19"
+Cohesion: 0.24
+Nodes (10): buildGame(), defaultPitcherIdx(), defaultState, emptyLineup(), loadState(), migrateState(), newId(), startGame (+2 more)
+
 ## Knowledge Gaps
-- **71 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+66 more)
+- **88 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+83 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **5 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useGameState()` connect `App Shell & Lineup Setup` to `Live Game & Batting Order`, `Sharing Codec & Validation`?**
-  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **Why does `useGameState()` connect `App Shell & Lineup Setup` to `Community 19`, `Live Game & Batting Order`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
 - **Why does `GameView()` connect `Live Game & Batting Order` to `App Shell & Lineup Setup`?**
-  _High betweenness centrality (0.027) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `Game Start Flow` to `Build & Dependency Config`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.020) - this node is a cross-community bridge._
+- **Why does `decodeLineup()` connect `Sharing Codec & Validation` to `App Shell & Lineup Setup`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Are the 6 inferred relationships involving `GameView()` (e.g. with `OutCounter()` and `endInning`) actually correct?**
   _`GameView()` has 6 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 2 inferred relationships involving `onDeckIndex()` (e.g. with `BatterSpotlight()` and `nextIndex()`) actually correct?**
   _`onDeckIndex()` has 2 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 4 inferred relationships involving `useGameState()` (e.g. with `handleImportAdd` and `handleImportUpdate`) actually correct?**
-  _`useGameState()` has 4 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `name`, `private`, `version` to the rest of the system?**
-  _74 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _91 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Build & Dependency Config` be split into smaller, more focused modules?**
+  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._

@@ -31,7 +31,7 @@ export default function StartGameModal({ players, teamName, onConfirm, onCancel 
             onClick={onCancel}
             className="flex-1 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 active:scale-[0.98] text-slate-700 font-medium transition"
           >
-            Edit Lineup
+            Cancel
           </button>
           <button
             onClick={onConfirm}

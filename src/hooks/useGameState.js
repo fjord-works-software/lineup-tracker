@@ -11,6 +11,7 @@ const defaultState = {
   lineups: {},
   currentBatterIndex: 0,
   outCount: 0,
+  runsByInning: [0],
   inning: 1,
 }
 
@@ -23,6 +24,7 @@ function emptyLineup(id) {
     id,
     league: '',
     teamName: '',
+    runRule: null,
     players: [
       { name: '', number: '', position: '', enabled: true },
       { name: '', number: '', position: '', enabled: true },
@@ -38,6 +40,11 @@ function loadState() {
     if (parsed.version !== STATE_VERSION) {
       localStorage.removeItem(STORAGE_KEY)
       return defaultState
+    }
+    // State saved before run tracking existed (possibly mid-game) has no
+    // runsByInning; backfill it rather than bumping the version and losing lineups.
+    if (!Array.isArray(parsed.runsByInning)) {
+      parsed.runsByInning = Array(parsed.inning).fill(0)
     }
     return parsed
   } catch {
@@ -65,7 +72,7 @@ export function useGameState() {
     }))
   }
 
-  function selectLineup(id) {
+  function editLineup(id) {
     setState(s => ({ ...s, activeLineupId: id, gamePhase: 'setup' }))
   }
 
@@ -100,14 +107,18 @@ export function useGameState() {
     })
   }
 
-  function startGame() {
+  function startGame(id) {
     setState(s => {
-      const players = s.lineups[s.activeLineupId].players
+      const lineup = s.lineups[id]
+      const players = lineup.players.filter(p => p.name.trim())
       return {
         ...s,
         gamePhase: 'game',
+        activeLineupId: id,
+        lineups: { ...s.lineups, [id]: { ...lineup, players } },
         currentBatterIndex: firstEnabledIndex(players),
         outCount: 0,
+        runsByInning: [0],
         inning: 1,
       }
     })
@@ -123,6 +134,7 @@ export function useGameState() {
             ...s.lineups[existingId],
             teamName: lineup.teamName,
             league: lineup.league,
+            runRule: lineup.runRule,
             players: lineup.players,
           },
         },
@@ -158,6 +170,20 @@ export function useGameState() {
     setState(s => ({ ...s, outCount: Math.max(s.outCount - 1, 0) }))
   }
 
+  function addRun() {
+    setState(s => ({
+      ...s,
+      runsByInning: s.runsByInning.map((r, i) => i === s.inning - 1 ? r + 1 : r),
+    }))
+  }
+
+  function removeRun() {
+    setState(s => ({
+      ...s,
+      runsByInning: s.runsByInning.map((r, i) => i === s.inning - 1 ? Math.max(r - 1, 0) : r),
+    }))
+  }
+
   function endInning() {
     setState(s => {
       const players = s.lineups[s.activeLineupId].players
@@ -165,6 +191,7 @@ export function useGameState() {
         ...s,
         currentBatterIndex: onDeckIndex(players, s.currentBatterIndex),
         outCount: 0,
+        runsByInning: [...s.runsByInning, 0],
         inning: s.inning + 1,
       }
     })
@@ -177,6 +204,7 @@ export function useGameState() {
       activeLineupId: null,
       currentBatterIndex: 0,
       outCount: 0,
+      runsByInning: [0],
       inning: 1,
     }))
   }
@@ -186,7 +214,7 @@ export function useGameState() {
     activeLineup,
     importLineup,
     newLineup,
-    selectLineup,
+    editLineup,
     deleteLineup,
     saveActiveLineup,
     goHome,
@@ -195,6 +223,8 @@ export function useGameState() {
     undoBatter,
     addOut,
     removeOut,
+    addRun,
+    removeRun,
     endInning,
     endGame,
   }

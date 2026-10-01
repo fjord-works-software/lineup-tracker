@@ -2,24 +2,32 @@ import { useState } from 'react'
 import { ArrowRight, Undo2 } from 'lucide-react'
 import BatterSpotlight from './BatterSpotlight'
 import OutCounter from './OutCounter'
+import RunCounter from './RunCounter'
 import LineupRoll from './LineupRoll'
 import ConfirmModal from './ConfirmModal'
 import { onDeckIndex, inHoleIndex } from '../utils/lineup'
 
-export default function GameView({ activeLineup, state, nextBatter, undoBatter, addOut, removeOut, endInning, endGame }) {
+export default function GameView({ activeLineup, state, nextBatter, undoBatter, addOut, removeOut, addRun, removeRun, endInning, endGame }) {
   const [showConfirm, setShowConfirm] = useState(false)
-  const { currentBatterIndex, outCount, inning } = state
+  const { currentBatterIndex, outCount, runsByInning, inning } = state
   const players = activeLineup.players
+  const totalRuns = runsByInning.reduce((sum, r) => sum + r, 0)
+  const inningRuns = runsByInning[inning - 1]
+  const runRule = activeLineup.runRule
 
   const atBat = players[currentBatterIndex]
   const onDeck = players[onDeckIndex(players, currentBatterIndex)]
   const inHole = players[inHoleIndex(players, currentBatterIndex)]
 
-  const inningEnded = outCount === 3
+  // Like 3 outs, reaching the run rule is derived rather than stored, so
+  // removing a mis-tapped run on the interstitial resumes the inning.
+  const endedByOuts = outCount === 3
+  const inningEnded = endedByOuts || (runRule > 0 && inningRuns >= runRule)
 
   // While the inning-ended interstitial is showing, currentBatterIndex still
-  // points at the batter who made the 3rd out. The next inning leads off with
-  // the on-deck batter, so advance the roll's highlight to match the headline.
+  // points at the batter who made the 3rd out (or drove in the final run). The
+  // next inning leads off with the on-deck batter, so advance the roll's
+  // highlight to match the headline.
   const rollIndex = inningEnded ? onDeckIndex(players, currentBatterIndex) : currentBatterIndex
 
   return (
@@ -42,15 +50,20 @@ export default function GameView({ activeLineup, state, nextBatter, undoBatter, 
       </div>
 
       {inningEnded ? (
-        <div className="px-4 pt-8 pb-4 flex flex-col items-center gap-1 text-center">
-          <div className="text-8xl font-black text-amber-600 leading-none">3</div>
-          <div className="text-2xl font-bold text-amber-800 uppercase tracking-widest">Outs</div>
-          <div className="text-amber-700 mt-3 text-lg">{onDeck?.name} leads off inning {inning + 1}</div>
+        <div className="px-4 pt-8 space-y-4">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <div className="text-8xl font-black text-amber-600 leading-none">{endedByOuts ? 3 : runRule}</div>
+            <div className="text-2xl font-bold text-amber-800 uppercase tracking-widest">{endedByOuts ? 'Outs' : 'Run Rule'}</div>
+            <div className="text-amber-700 mt-3 text-lg">{onDeck?.name} leads off inning {inning + 1}</div>
+          </div>
+          {/* Still adjustable here so a run scored on the final play can be recorded, or a mis-tap undone. */}
+          <RunCounter totalRuns={totalRuns} inningRuns={inningRuns} runRule={runRule} onAdd={addRun} onRemove={removeRun} />
         </div>
       ) : (
         <div className="px-4 pt-4 space-y-4">
           <BatterSpotlight atBat={atBat} onDeck={onDeck} inHole={inHole} />
           <OutCounter outCount={outCount} onAdd={addOut} onRemove={removeOut} />
+          <RunCounter totalRuns={totalRuns} inningRuns={inningRuns} runRule={runRule} onAdd={addRun} onRemove={removeRun} />
         </div>
       )}
 

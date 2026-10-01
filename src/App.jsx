@@ -67,8 +67,9 @@ export default function App() {
           <HomeScreen
             lineups={state.lineups}
             newLineup={game.newLineup}
-            selectLineup={game.selectLineup}
+            editLineup={game.editLineup}
             deleteLineup={game.deleteLineup}
+            startGame={game.startGame}
             onImportLineupCode={setImportData}
           />
           {importData && (
@@ -86,7 +87,6 @@ export default function App() {
         <LineupSetup
           lineup={activeLineup}
           onSave={game.saveActiveLineup}
-          onStart={game.startGame}
           onBack={game.goHome}
         />
       )}
@@ -98,6 +98,8 @@ export default function App() {
           undoBatter={game.undoBatter}
           addOut={game.addOut}
           removeOut={game.removeOut}
+          addRun={game.addRun}
+          removeRun={game.removeRun}
           endInning={game.endInning}
           endGame={game.endGame}
         />

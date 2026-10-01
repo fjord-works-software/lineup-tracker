@@ -1,16 +1,24 @@
 import { useState } from 'react'
-import { Share2, Trash2, ScanQrCode, Info } from 'lucide-react'
+import { Pencil, Share2, Trash2, ScanQrCode, Info } from 'lucide-react'
 import ConfirmModal from './ConfirmModal'
 import QRModal from './QRModal'
 import QRScanModal from './QRScanModal'
+import StartGameModal from './StartGameModal'
 import { buildShareUrl } from '../utils/share'
 
-export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLineup, onImportLineupCode }) {
+export default function HomeScreen({ lineups, newLineup, editLineup, deleteLineup, startGame, onImportLineupCode }) {
+  const [selectedId, setSelectedId] = useState(null)
+  const [showStartConfirm, setShowStartConfirm] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState(null)
   const [sharingLineup, setSharingLineup] = useState(null)
   const [sharingUrl, setSharingUrl] = useState(null)
   const [showQRScan, setShowQRScan] = useState(false)
   const [showInfo, setShowInfo] = useState(false)
+
+  const selectedLineup = selectedId ? lineups[selectedId] : null
+  const validCount = selectedLineup ? selectedLineup.players.filter(p => p.name.trim()).length : 0
+  const enabledCount = selectedLineup ? selectedLineup.players.filter(p => p.name.trim() && p.enabled !== false).length : 0
+  const canStart = enabledCount >= 2
 
   function openShareModal(lineup) {
     try {
@@ -36,7 +44,7 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           <span className="text-4xl">⚾</span>
           <div>
             <h1 className="text-2xl font-bold tracking-wide text-white">Lineup Tracker</h1>
-            <p className="text-slate-300 text-sm mt-1">Select a team to manage</p>
+            <p className="text-slate-300 text-sm mt-1">Select a team to start a game</p>
           </div>
         </div>
         <button
@@ -58,10 +66,15 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
           <div className="space-y-3">
             {lineupList.map(lineup => {
               const playerCount = lineup.players.filter(p => p.name.trim()).length
+              const isSelected = lineup.id === selectedId
               return (
-                <div key={lineup.id} className="bg-white border border-slate-200 rounded-xl flex items-center">
+                <div
+                  key={lineup.id}
+                  className={`border rounded-xl flex items-center transition-colors ${isSelected ? 'bg-blue-50 border-blue-700 ring-1 ring-blue-700' : 'bg-white border-slate-200'}`}
+                >
                   <button
-                    onClick={() => selectLineup(lineup.id)}
+                    onClick={() => setSelectedId(id => id === lineup.id ? null : lineup.id)}
+                    aria-pressed={isSelected}
                     className="flex-1 px-4 py-4 text-left rounded-l-xl active:bg-slate-100 transition-colors"
                   >
                     <div className="font-bold text-slate-900 text-lg leading-tight">
@@ -77,6 +90,13 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
                         {playerCount} {playerCount === 1 ? 'player' : 'players'}
                       </span>
                     </div>
+                  </button>
+                  <button
+                    onClick={() => editLineup(lineup.id)}
+                    className="px-3 py-4 text-slate-500 hover:text-blue-600 active:text-blue-700 transition-colors text-lg"
+                    aria-label="Edit lineup"
+                  >
+                    <Pencil size={18} />
                   </button>
                   <button
                     onClick={() => openShareModal(lineup)}
@@ -100,20 +120,43 @@ export default function HomeScreen({ lineups, newLineup, selectLineup, deleteLin
       </div>
 
       <div className="px-4 pt-4 pb-safe-4 border-t border-slate-200 bg-white">
-        <button
-          onClick={newLineup}
-          className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] text-white font-bold text-lg transition"
-        >
-          + New Lineup
-        </button>
+        {selectedLineup ? (
+          <button
+            onClick={() => setShowStartConfirm(true)}
+            disabled={!canStart}
+            className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] disabled:bg-slate-100 disabled:text-slate-400 disabled:active:scale-100 text-white font-bold text-lg transition"
+          >
+            {canStart ? `Start Game (${enabledCount} of ${validCount} active)` : 'Need at least 2 active players'}
+          </button>
+        ) : (
+          <button
+            onClick={newLineup}
+            className="w-full py-4 rounded-xl bg-blue-700 hover:bg-blue-600 active:bg-blue-800 active:scale-[0.98] text-white font-bold text-lg transition"
+          >
+            + New Lineup
+          </button>
+        )}
       </div>
 
       {confirmDeleteId && (
         <ConfirmModal
           message={`Delete "${lineups[confirmDeleteId]?.teamName || 'this lineup'}"? This cannot be undone.`}
           confirmLabel="Delete"
-          onConfirm={() => { deleteLineup(confirmDeleteId); setConfirmDeleteId(null) }}
+          onConfirm={() => {
+            deleteLineup(confirmDeleteId)
+            if (confirmDeleteId === selectedId) setSelectedId(null)
+            setConfirmDeleteId(null)
+          }}
           onCancel={() => setConfirmDeleteId(null)}
+        />
+      )}
+
+      {showStartConfirm && selectedLineup && (
+        <StartGameModal
+          players={selectedLineup.players}
+          teamName={selectedLineup.teamName}
+          onConfirm={() => startGame(selectedLineup.id)}
+          onCancel={() => setShowStartConfirm(false)}
         />
       )}
 

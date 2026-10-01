@@ -18,8 +18,8 @@ There are no tests configured. The build output includes a service worker (`dist
 This is a single-page React PWA with no routing. All state lives in one hook and is persisted to `localStorage` under the key `lineup_game_state`.
 
 **Three-phase flow** — `App.jsx` switches top-level views based on `state.gamePhase`:
-- `'home'` → `HomeScreen`: list of saved lineups, create/delete teams
-- `'setup'` → `LineupSetup`: edit team name, league, and batting order for the active lineup
+- `'home'` → `HomeScreen`: list of saved lineups; tapping a row selects it (local `selectedId` state) and swaps the bottom "+ New Lineup" button for "Start Game", which opens `StartGameModal` for review. Each row has edit/share/delete buttons.
+- `'setup'` → `LineupSetup`: edit team name, league, and batting order for the active lineup; the bottom Save button returns home (reached only via the row's edit button or "+ New Lineup")
 - `'game'` → `GameView`: live game tracking
 
 **State shape** (`src/hooks/useGameState.js`):
@@ -29,24 +29,27 @@ This is a single-page React PWA with no routing. All state lives in one hook and
   gamePhase,
   activeLineupId,       // key into lineups{}
   lineups: {
-    [id]: { id, league, teamName, players: [{ name, number, position, enabled }], sourceId? }
-  },                    // sourceId is set only on imported lineups, used to detect re-imports
+    [id]: { id, league, teamName, runRule, players: [{ name, number, position, enabled }], sourceId? }
+  },                    // runRule: runs per inning that end it, or null/absent for none (only 3 outs).
+                        // sourceId is set only on imported lineups, used to detect re-imports
   currentBatterIndex,   // index into the active lineup's players array
-  outCount,             // 0–3; reaching 3 is a UI gate only, not a state transition
+  outCount,             // 0–3; reaching 3 (or the lineup's runRule in runs this inning) is a UI gate only, not a state transition
+  runsByInning,         // runs scored per inning, index = inning - 1; endInning appends a 0.
+                        // Added without a version bump — loadState backfills it for older saved state
   inning,
 }
 ```
 
-`saveActiveLineup(patch)` is called on every keystroke in `LineupSetup` — the lineup is always up to date in state. `goHome()` deletes the active lineup if it has no team name and no named players (abandoned new lineup cleanup).
+`saveActiveLineup(patch)` is called on every keystroke in `LineupSetup` — the lineup is always up to date in state, so Save and the back chevron both just call `goHome()`. `startGame(id)` sets `activeLineupId` and strips unnamed players from the lineup before play. `goHome()` deletes the active lineup if it has no team name and no named players (abandoned new lineup cleanup).
 
 **Batting order logic** (`src/utils/lineup.js`):
 - The file exports five functions. The four navigation helpers (`nextIndex`, `prevIndex`, `onDeckIndex`, `inHoleIndex`) take `(players, currentIndex)` — the full player array, not just its length — because disabled players (`enabled === false`) are skipped. `firstEnabledIndex` takes just `(players)`. `enabledIndices` and `step` are internal (not exported).
 - `onDeckIndex` / `inHoleIndex` walk forward through enabled indices only.
 - `nextIndex` / `prevIndex` are used by `nextBatter` / `undoBatter` in the hook.
-- `firstEnabledIndex` is used by `startGame()` to land on the correct first batter.
+- `firstEnabledIndex` is used by `startGame(id)` to land on the correct first batter.
 - `currentBatterIndex` always points into the full (unfiltered) players array. `LineupRoll` uses `map` with `return null` for disabled players (not `filter`) to preserve index alignment.
 
-**Lineup sharing & import** (`src/utils/share.js`): a lineup is serialized to a base64 JSON string and shared from `HomeScreen` two ways — a `#import=<code>` URL (`buildShareUrl`, displayed as a QR code by `QRModal`) and a camera scan (`QRScanModal`). On load, `App.jsx`'s `readImportHash()` decodes any `#import=` hash, strips it from the URL, and opens `ImportModal`; when the incoming `sourceId` matches an existing lineup the modal offers update-in-place vs. add-new (the hook's `importLineup` action). `decodeLineup` validates every field — string length, player count, base-36 id format — before trusting external input.
+**Lineup sharing & import** (`src/utils/share.js`): a lineup is serialized to a base64 JSON string and shared from `HomeScreen` two ways — a `#import=<code>` URL (`buildShareUrl`, displayed as a QR code by `QRModal`) and a camera scan (`QRScanModal`). On load, `App.jsx`'s `readImportHash()` decodes any `#import=` hash, strips it from the URL, and opens `ImportModal`; when the incoming `sourceId` matches an existing lineup the modal offers update-in-place vs. add-new (the hook's `importLineup` action). `decodeLineup` validates every field — string length, player count, base-36 id format, run rule 1–99 — before trusting external input.
 
 **PWA configuration** (`vite.config.js`): `vite-plugin-pwa` (default `generateSW` strategy) precaches all build assets via the workbox `globPatterns`. `registerType` is `'prompt'`, so `App.jsx` uses `useRegisterSW` to render an "Update ready / Reload" banner and polls `r.update()` every 60s and on tab focus. The manifest base/`start_url`/`scope` derive from the `VITE_BASE` env var (set during the GitHub Pages build). Icons live in `public/icons/`.
 
